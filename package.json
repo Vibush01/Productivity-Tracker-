@@ -1,0 +1,16 @@
+{
+  "name": "productivity-tracker",
+  "version": "1.0.0",
+  "description": "A premium productivity tracker with habit tracking, community programs, and gamification",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,client -c cyan,green \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

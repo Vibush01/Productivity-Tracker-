@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ─── Tailwind v4 Theme (Design System) ─── */
+@theme {
+  /* Colors */
+  --color-bg-primary: #0A0A0A;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1A1A1A;
+  --color-bg-quaternary: #222222;
+
+  --color-neon: #39FF14;
+  --color-neon-dim: #2ECC0F;
+  --color-neon-dark: #1F8A0A;
+
+  --color-text-primary: #EAEAEA;
+  --color-text-secondary: #888888;
+  --color-text-tertiary: #555555;
+
+  --color-danger: #FF3B3B;
+  --color-danger-dim: #CC2F2F;
+  --color-warning: #FFB800;
+  --color-warning-dim: #CC9300;
+  --color-info: #00D1FF;
+  --color-info-dim: #00A8CC;
+
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-neon: rgba(57, 255, 20, 0.15);
+  --color-border-neon-strong: rgba(57, 255, 20, 0.3);
+
+  --color-glass: rgba(17, 17, 17, 0.75);
+  --color-glass-light: rgba(26, 26, 26, 0.6);
+
+  --color-rarity-epic: #A855F7;
+  --color-rarity-legendary: #FFD700;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --spacing-sidebar: 260px;
+  --spacing-sidebar-collapsed: 72px;
+  --spacing-navbar: 64px;
+  --spacing-bottom-nav: 64px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-neon: 0 0 20px rgba(57, 255, 20, 0.3);
+  --shadow-neon-strong: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
+  --shadow-neon-text: 0 0 10px rgba(57, 255, 20, 0.5);
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.2s ease-out;
+  --animate-slide-down: slide-down 0.2s ease-out;
+  --animate-slide-in-left: slide-in-left 0.2s ease-out;
+  --animate-slide-in-right: slide-in-right 0.2s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-pop-in: pop-in 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.5s infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.5); }
+    70% { transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(57, 255, 20, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(57, 255, 20, 0.5), 0 0 50px rgba(57, 255, 20, 0.2); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes xp-float {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    50% { opacity: 1; transform: translateY(-30px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+  }
+}
+
+/* ─── Base / Reset ─── */
+@layer base {
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--color-bg-secondary); }
+  ::-webkit-scrollbar-thumb { background: var(--color-bg-quaternary); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-neon-dark); }
+
+  ::selection {
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--color-neon);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    color: var(--color-neon);
+    text-decoration: none;
+  }
+
+  button {
+    font-family: var(--font-sans);
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+
+  input, textarea, select {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+  }
+}
+
+/* ─── Utilities ─── */
+@utility glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-neon);
+  border-radius: var(--radius-lg);
+}
+
+@utility neon-glow {
+  box-shadow: var(--shadow-neon);
+}
+
+@utility neon-glow-strong {
+  box-shadow: var(--shadow-neon-strong);
+}
+
+@utility neon-text-glow {
+  text-shadow: var(--shadow-neon-text);
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, var(--color-bg-tertiary) 25%, var(--color-bg-quaternary) 50%, var(--color-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
