@@ -18,6 +18,9 @@ import Journal from './pages/Journal';
 import Programs from './pages/Programs';
 import LeaderboardPage from './pages/Leaderboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import BottomNav from './components/common/BottomNav';
 import './styles/index.css';
 
 // Protected Route wrapper
@@ -42,6 +45,7 @@ const ProtectedRoute: React.FC = () => {
       <main className="flex-1 ml-[260px] max-lg:ml-[72px] max-md:ml-0 min-w-0 transition-[margin] duration-300 pt-16 p-8 max-md:p-4 pb-[100px]">
         <Outlet />
       </main>
+      <BottomNav />
     </div>
   );
 };
@@ -65,14 +69,6 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-// Placeholder for pages not yet built
-const ComingSoon: React.FC<{ page: string }> = ({ page }) => (
-  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-    <span className="text-5xl">🚧</span>
-    <h2 className="text-2xl font-bold">{page}</h2>
-    <p className="text-text-secondary">Coming in the next phase</p>
-  </div>
-);
 
 const App: React.FC = () => {
   const { loadUser } = useAuthStore();
@@ -108,8 +104,8 @@ const App: React.FC = () => {
           <Route path="/journal" element={<Journal />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/profile" element={<ComingSoon page="Profile" />} />
-          <Route path="/settings" element={<ComingSoon page="Settings" />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
