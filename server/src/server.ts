@@ -16,6 +16,9 @@ import taskRoutes from './routes/taskRoutes.js';
 import routineRoutes from './routes/routineRoutes.js';
 import timerRoutes from './routes/timerRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
+import programRoutes from './routes/programRoutes.js';
+import leaderboardRoutes from './routes/leaderboardRoutes.js';
+import journalRoutes from './routes/journalRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -48,6 +51,9 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/routines', routineRoutes);
 app.use('/api/timer', timerRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/journal', journalRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

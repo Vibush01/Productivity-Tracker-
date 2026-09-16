@@ -14,6 +14,10 @@ import Routines from './pages/Routines';
 import TimerPage from './pages/Timer';
 import Calendar from './pages/Calendar';
 import Stats from './pages/Stats';
+import Journal from './pages/Journal';
+import Programs from './pages/Programs';
+import LeaderboardPage from './pages/Leaderboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import './styles/index.css';
 
 // Protected Route wrapper
@@ -101,12 +105,12 @@ const App: React.FC = () => {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/timer" element={<TimerPage />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/journal" element={<ComingSoon page="Journal" />} />
-          <Route path="/programs" element={<ComingSoon page="Programs" />} />
-          <Route path="/leaderboard" element={<ComingSoon page="Leaderboard" />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/programs" element={<Programs />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/profile" element={<ComingSoon page="Profile" />} />
           <Route path="/settings" element={<ComingSoon page="Settings" />} />
-          <Route path="/admin" element={<ComingSoon page="Admin Panel" />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
         {/* Catch all */}

@@ -192,3 +192,86 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ success: false, error: 'Server error changing password' });
   }
 };
+
+// @route   DELETE /api/auth/account
+// @desc    Delete user account and all associated data
+export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { password } = req.body;
+    if (!password) {
+      res.status(400).json({ success: false, error: 'Password required to confirm deletion' });
+      return;
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+      res.status(404).json({ success: false, error: 'User not found' });
+      return;
+    }
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      res.status(401).json({ success: false, error: 'Incorrect password' });
+      return;
+    }
+
+    // Delete all user data
+    const Habit = (await import('../models/Habit.js')).default;
+    const HabitLog = (await import('../models/HabitLog.js')).default;
+    const Task = (await import('../models/Task.js')).default;
+    const Routine = (await import('../models/Routine.js')).default;
+    const TimerSession = (await import('../models/TimerSession.js')).default;
+    const JournalEntry = (await import('../models/JournalEntry.js')).default;
+    const ProgramParticipant = (await import('../models/ProgramParticipant.js')).default;
+    const CategoryModel = (await import('../models/Category.js')).default;
+
+    await Promise.all([
+      Habit.deleteMany({ userId: req.user._id }),
+      HabitLog.deleteMany({ userId: req.user._id }),
+      Task.deleteMany({ userId: req.user._id }),
+      Routine.deleteMany({ userId: req.user._id }),
+      TimerSession.deleteMany({ userId: req.user._id }),
+      JournalEntry.deleteMany({ userId: req.user._id }),
+      ProgramParticipant.deleteMany({ userId: req.user._id }),
+      CategoryModel.deleteMany({ userId: req.user._id }),
+    ]);
+
+    await user.deleteOne();
+    res.json({ success: true, message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error deleting account' });
+  }
+};
+
+// @route   GET /api/auth/export
+// @desc    Export all user data as JSON
+export const exportData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Habit = (await import('../models/Habit.js')).default;
+    const HabitLog = (await import('../models/HabitLog.js')).default;
+    const Task = (await import('../models/Task.js')).default;
+    const Routine = (await import('../models/Routine.js')).default;
+    const TimerSession = (await import('../models/TimerSession.js')).default;
+    const JournalEntry = (await import('../models/JournalEntry.js')).default;
+
+    const [habits, habitLogs, tasks, routines, timerSessions, journalEntries] = await Promise.all([
+      Habit.find({ userId: req.user._id }),
+      HabitLog.find({ userId: req.user._id }),
+      Task.find({ userId: req.user._id }),
+      Routine.find({ userId: req.user._id }),
+      TimerSession.find({ userId: req.user._id }),
+      JournalEntry.find({ userId: req.user._id }),
+    ]);
+
+    const exportPayload = {
+      exportedAt: new Date().toISOString(),
+      user: { name: req.user.name, email: req.user.email, xp: req.user.xp, level: req.user.level },
+      habits, habitLogs, tasks, routines, timerSessions, journalEntries,
+    };
+
+    res.json({ success: true, data: exportPayload });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error exporting data' });
+  }
+};
+

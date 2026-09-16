@@ -300,3 +300,75 @@ export interface CalendarDayData {
   completedHabits: number;
   totalHabits: number;
 }
+
+// ─── Program ───────────────────────────────────
+export interface Program {
+  _id: string;
+  title: string;
+  description: string;
+  rules?: string;
+  icon: string;
+  color: string;
+  habitToTrack: string;
+  startDate: string;
+  endDate: string;
+  maxParticipants?: number;
+  isActive: boolean;
+  createdBy: { _id: string; name: string } | string;
+  participantCount?: number;
+  isJoined?: boolean;
+  createdAt: string;
+}
+
+export interface ProgramParticipant {
+  _id: string;
+  programId: Program | string;
+  userId: string;
+  linkedHabitId?: string;
+  joinedAt: string;
+  currentStreak: number;
+  longestStreak: number;
+  completionRate: number;
+  totalDaysCompleted: number;
+  lastLogDate?: string;
+  participantCount?: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  name: string;
+  avatar?: string;
+  level: number;
+  xp?: number;
+  score: number;
+  totalCompleted: number;
+  bestStreak: number;
+  currentStreak?: number;
+  completionRate?: number;
+  totalDaysCompleted?: number;
+  isAnonymous: boolean;
+}
+
+// ─── Journal ───────────────────────────────────
+export interface JournalEntry {
+  _id: string;
+  userId: string;
+  date: string;
+  title?: string;
+  content: string;
+  mood: 'great' | 'good' | 'okay' | 'bad' | 'terrible';
+  tags: string[];
+  linkedHabits: { _id: string; title: string; icon: string; color: string }[];
+  createdAt: string;
+}
+
+export interface MoodDistribution {
+  _id: string;
+  count: number;
+}
+
+export interface MoodTimeline {
+  date: string;
+  mood: string;
+}
