@@ -125,3 +125,88 @@ export interface HabitFormData {
   goalUnit: string;
   reminderTime: string;
 }
+
+// ─── Task ──────────────────────────────────────
+export interface Subtask {
+  _id: string;
+  title: string;
+  completed: boolean;
+}
+
+export interface TaskRecurrence {
+  type: 'daily' | 'weekly' | 'monthly';
+  interval: number;
+  daysOfWeek?: number[];
+  endDate?: string;
+}
+
+export interface Task {
+  _id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  category?: Category;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate?: string;
+  dueTime?: string;
+  isRecurring: boolean;
+  recurrence?: TaskRecurrence;
+  subtasks: Subtask[];
+  completed: boolean;
+  completedAt?: string;
+  order: number;
+  createdAt: string;
+}
+
+export interface TaskFormData {
+  title: string;
+  description: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate: string;
+  dueTime: string;
+  subtasks: { title: string; completed: boolean }[];
+}
+
+// ─── Routine ───────────────────────────────────
+export interface RoutineItem {
+  _id?: string;
+  type: 'habit' | 'task';
+  refId: string;
+  order: number;
+  duration?: number;
+  refData?: {
+    _id: string;
+    title: string;
+    icon?: string;
+    color?: string;
+    priority?: string;
+    completed?: boolean;
+  };
+}
+
+export interface Routine {
+  _id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  icon: string;
+  color: string;
+  timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
+  startTime?: string;
+  items: RoutineItem[];
+  daysActive: number[];
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface RoutineFormData {
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
+  startTime: string;
+  items: { type: 'habit' | 'task'; refId: string; order: number; duration?: number }[];
+  daysActive: number[];
+}

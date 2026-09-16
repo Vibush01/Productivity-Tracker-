@@ -12,6 +12,8 @@ import authRoutes from './routes/authRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import motivationRoutes from './routes/motivationRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
+import routineRoutes from './routes/routineRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -40,6 +42,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/motivation', motivationRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/routines', routineRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

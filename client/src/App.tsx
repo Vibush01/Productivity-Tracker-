@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Habits from './pages/Habits';
+import Tasks from './pages/Tasks';
+import Routines from './pages/Routines';
 import './styles/index.css';
 
 // Protected Route wrapper
@@ -91,8 +93,8 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
-          <Route path="/tasks" element={<ComingSoon page="Tasks" />} />
-          <Route path="/routines" element={<ComingSoon page="Routines" />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/routines" element={<Routines />} />
           <Route path="/calendar" element={<ComingSoon page="Calendar" />} />
           <Route path="/timer" element={<ComingSoon page="Timer" />} />
           <Route path="/stats" element={<ComingSoon page="Statistics" />} />
