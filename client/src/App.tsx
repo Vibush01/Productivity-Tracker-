@@ -11,6 +11,9 @@ import Dashboard from './pages/Dashboard';
 import Habits from './pages/Habits';
 import Tasks from './pages/Tasks';
 import Routines from './pages/Routines';
+import TimerPage from './pages/Timer';
+import Calendar from './pages/Calendar';
+import Stats from './pages/Stats';
 import './styles/index.css';
 
 // Protected Route wrapper
@@ -95,9 +98,9 @@ const App: React.FC = () => {
           <Route path="/habits" element={<Habits />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/routines" element={<Routines />} />
-          <Route path="/calendar" element={<ComingSoon page="Calendar" />} />
-          <Route path="/timer" element={<ComingSoon page="Timer" />} />
-          <Route path="/stats" element={<ComingSoon page="Statistics" />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/timer" element={<TimerPage />} />
+          <Route path="/stats" element={<Stats />} />
           <Route path="/journal" element={<ComingSoon page="Journal" />} />
           <Route path="/programs" element={<ComingSoon page="Programs" />} />
           <Route path="/leaderboard" element={<ComingSoon page="Leaderboard" />} />

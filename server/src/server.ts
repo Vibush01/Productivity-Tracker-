@@ -14,6 +14,8 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import motivationRoutes from './routes/motivationRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import routineRoutes from './routes/routineRoutes.js';
+import timerRoutes from './routes/timerRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -44,6 +46,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/motivation', motivationRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/routines', routineRoutes);
+app.use('/api/timer', timerRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

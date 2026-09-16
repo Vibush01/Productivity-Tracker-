@@ -210,3 +210,93 @@ export interface RoutineFormData {
   items: { type: 'habit' | 'task'; refId: string; order: number; duration?: number }[];
   daysActive: number[];
 }
+
+// ─── Timer ─────────────────────────────────────
+export interface TimerSession {
+  _id: string;
+  userId: string;
+  type: 'pomodoro' | 'stopwatch' | 'countdown';
+  linkedHabit?: {
+    _id: string;
+    title: string;
+    icon: string;
+    color: string;
+  };
+  duration: number;
+  actualDuration: number;
+  startedAt: string;
+  endedAt?: string;
+  label?: string;
+  createdAt: string;
+}
+
+export interface TimerStats {
+  overview: {
+    totalSessions: number;
+    totalFocusTime: number;
+    avgDuration: number;
+    pomodoroCount: number;
+    stopwatchCount: number;
+    countdownCount: number;
+    longestSession: number;
+  };
+  dailyBreakdown: { _id: string; sessions: number; totalTime: number }[];
+}
+
+// ─── Stats ─────────────────────────────────────
+export interface OverviewStats {
+  totalHabits: number;
+  totalTasks: number;
+  completedTasks: number;
+  totalCompletions: number;
+  totalSessions: number;
+  totalFocusSeconds: number;
+  completionRate: number;
+  bestStreak: number;
+  xp: number;
+  level: number;
+}
+
+export interface WeeklyDay {
+  date: string;
+  dayName: string;
+  completed: number;
+  total: number;
+  rate: number;
+}
+
+export interface HeatmapEntry {
+  date: string;
+  count: number;
+  rate: number;
+}
+
+export interface CategoryStat {
+  categoryId: string;
+  name: string;
+  icon: string;
+  color: string;
+  total: number;
+  completed: number;
+}
+
+// ─── Calendar ──────────────────────────────────
+export interface CalendarDayData {
+  habits: {
+    habitId: string;
+    title: string;
+    icon: string;
+    color: string;
+    completed: boolean;
+    value?: number;
+    note?: string;
+  }[];
+  tasks: {
+    _id: string;
+    title: string;
+    priority: string;
+    completed: boolean;
+  }[];
+  completedHabits: number;
+  totalHabits: number;
+}
