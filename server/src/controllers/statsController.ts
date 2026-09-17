@@ -287,3 +287,36 @@ export const getCalendarData = async (req: Request, res: Response): Promise<void
     res.status(500).json({ success: false, error: 'Server error fetching calendar data' });
   }
 };
+
+// @route   GET /api/stats/weekly-summary
+// @desc    Quick weekly summary for dashboard widget
+export const getWeeklySummary = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user._id;
+    const now = new Date();
+    const weekStart = getStartOfWeek(now);
+
+    const [weekLogs, totalHabits] = await Promise.all([
+      HabitLog.countDocuments({ userId, completed: true, date: { $gte: weekStart } }),
+      Habit.countDocuments({ userId, isArchived: false }),
+    ]);
+
+    // Days elapsed this week
+    const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); // Mon=1
+    const expectedTotal = totalHabits * dayOfWeek;
+
+    // XP earned this week (approximate from logs * 15 XP each)
+    const xpEarned = weekLogs * 15;
+
+    res.json({
+      success: true,
+      data: {
+        completed: weekLogs,
+        total: expectedTotal,
+        xpEarned,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching weekly summary' });
+  }
+};

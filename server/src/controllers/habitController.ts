@@ -272,3 +272,100 @@ export const archiveHabit = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ success: false, error: 'Server error archiving habit' });
   }
 };
+
+// @route   GET /api/habits/templates
+export const getTemplates = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const { TEMPLATE_PACKS } = await import('../utils/habitTemplates.js');
+    res.json({ success: true, data: TEMPLATE_PACKS });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching templates' });
+  }
+};
+
+// @route   POST /api/habits/templates/:packId/import
+export const importTemplate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { TEMPLATE_PACKS } = await import('../utils/habitTemplates.js');
+    const pack = TEMPLATE_PACKS.find((p) => p.id === req.params.packId);
+    if (!pack) { res.status(404).json({ success: false, error: 'Template pack not found' }); return; }
+
+    const existing = await Habit.countDocuments({ userId: req.user._id });
+
+    const habitsToCreate = pack.habits.map((h, i) => ({
+      userId: req.user._id,
+      title: h.title,
+      description: h.description,
+      icon: h.icon,
+      color: h.color,
+      frequency: h.frequency,
+      goalType: h.goalType,
+      goalValue: h.goalValue,
+      goalUnit: h.goalUnit,
+      order: existing + i,
+    }));
+
+    const created = await Habit.insertMany(habitsToCreate);
+    res.status(201).json({ success: true, data: { imported: created.length, habits: created } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error importing template' });
+  }
+};
+
+// @route   GET /api/habits/:id/detail
+export const getHabitDetail = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const habit = await Habit.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!habit) { res.status(404).json({ success: false, error: 'Habit not found' }); return; }
+
+    // Get all logs for this habit
+    const logs = await HabitLog.find({ habitId: habit._id, userId: req.user._id })
+      .sort({ date: -1 })
+      .limit(365)
+      .lean();
+
+    // Calculate stats
+    const totalLogs = logs.length;
+    const completedLogs = logs.filter((l) => l.completed);
+    const totalCompleted = completedLogs.length;
+    const completionRate = totalLogs > 0 ? Math.round((totalCompleted / totalLogs) * 100) : 0;
+
+    // Current streak
+    const sortedDates = completedLogs.map((l) => normalizeDate(l.date)).sort((a, b) => b.getTime() - a.getTime());
+    const currentStreak = calculateCurrentStreak(sortedDates);
+    const longestStreak = calculateLongestStreak(sortedDates);
+
+    // Completion by day of week
+    const dayDistribution = [0, 0, 0, 0, 0, 0, 0];
+    completedLogs.forEach((l) => {
+      const day = new Date(l.date).getDay();
+      dayDistribution[day]++;
+    });
+
+    // Monthly trend (last 6 months)
+    const monthlyTrend: { month: string; count: number }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const monthStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const count = completedLogs.filter((l) => {
+        const ld = new Date(l.date);
+        return ld.getFullYear() === d.getFullYear() && ld.getMonth() === d.getMonth();
+      }).length;
+      monthlyTrend.push({ month: monthStr, count });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        habit,
+        stats: { totalCompleted, completionRate, currentStreak, longestStreak },
+        dayDistribution,
+        monthlyTrend,
+        recentLogs: logs.slice(0, 90), // Last 90 days of logs
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching habit detail' });
+  }
+};

@@ -25,10 +25,13 @@ import Settings from './pages/Settings';
 import BottomNav from './components/common/BottomNav';
 import HonestyCheckIn from './components/accountability/HonestyCheckIn';
 import Achievements from './pages/Achievements';
+import Templates from './pages/Templates';
+import HabitDetail from './pages/HabitDetail';
+import FocusMode from './pages/FocusMode';
 import './styles/index.css';
 
-// Protected Route wrapper
-const ProtectedRoute: React.FC = () => {
+// Layout Protected Route wrapper (with Sidebar)
+const LayoutProtectedRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuthStore();
 
   if (isLoading) {
@@ -53,6 +56,25 @@ const ProtectedRoute: React.FC = () => {
       <HonestyCheckIn />
     </div>
   );
+};
+
+// Standalone Protected Route wrapper (no Sidebar)
+const StandaloneProtectedRoute: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-10 h-10 border-[3px] border-bg-tertiary border-t-neon rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 };
 
 // Public Route wrapper (redirect if already logged in)
@@ -99,8 +121,13 @@ const App: React.FC = () => {
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
+        {/* Standalone protected routes */}
+        <Route element={<StandaloneProtectedRoute />}>
+          <Route path="/focus" element={<FocusMode />} />
+        </Route>
+
+        {/* Layout protected routes */}
+        <Route element={<LayoutProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/tasks" element={<Tasks />} />
@@ -114,6 +141,8 @@ const App: React.FC = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/achievements" element={<Achievements />} />
+          <Route path="/templates" element={<Templates />} />
+          <Route path="/habits/:id" element={<HabitDetail />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ManageUsers />} />
         </Route>

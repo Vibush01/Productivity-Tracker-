@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Target, CheckSquare, ListChecks, Calendar, Timer, BarChart3,
-  BookOpen, Trophy, Users, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Shield, Award
+  BookOpen, Trophy, Users, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Shield, Award, PackagePlus
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -16,6 +16,7 @@ const mainNav = [
   { path: '/timer', label: 'Timer', icon: Timer },
   { path: '/stats', label: 'Statistics', icon: BarChart3 },
   { path: '/journal', label: 'Journal', icon: BookOpen },
+  { path: '/templates', label: 'Templates', icon: PackagePlus },
 ];
 
 const communityNav = [

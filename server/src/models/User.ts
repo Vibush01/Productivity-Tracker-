@@ -27,6 +27,7 @@ const userSchema = new Schema<IUser>(
     settings: { type: userSettingsSchema, default: () => ({}) },
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
+    streakFreezes: { type: Number, default: 0, max: 3 },
     achievements: [{ type: String }],
   },
   { timestamps: true }

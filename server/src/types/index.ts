@@ -19,6 +19,7 @@ export interface IUser extends Document {
   settings: IUserSettings;
   xp: number;
   level: number;
+  streakFreezes: number;
   achievements: string[];
   createdAt: Date;
   updatedAt: Date;

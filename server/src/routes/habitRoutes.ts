@@ -9,6 +9,9 @@ import {
   getHabitLogs,
   reorderHabits,
   archiveHabit,
+  getTemplates,
+  importTemplate,
+  getHabitDetail,
 } from '../controllers/habitController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -18,8 +21,11 @@ const router = Router();
 router.use(protect);
 
 router.route('/').get(getHabits).post(createHabit);
+router.get('/templates', getTemplates);
+router.post('/templates/:packId/import', importTemplate);
 router.put('/reorder', reorderHabits);
 router.route('/:id').put(updateHabit).delete(deleteHabit);
+router.get('/:id/detail', getHabitDetail);
 router.post('/:id/log', logHabit);
 router.delete('/:id/log/:date', deleteLog);
 router.get('/:id/logs', getHabitLogs);
