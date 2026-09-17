@@ -3,7 +3,7 @@
 
 /* ─── Tailwind v4 Theme (Design System) ─── */
 @theme {
-  /* Colors */
+  /* Colors — Dark mode defaults (overridden by .light class below) */
   --color-bg-primary: #0A0A0A;
   --color-bg-secondary: #111111;
   --color-bg-tertiary: #1A1A1A;
@@ -120,6 +120,50 @@
   }
 }
 
+/* ─── Light Mode Override ─── */
+html.light {
+  --color-bg-primary: #F5F5F7;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #EEEEF0;
+  --color-bg-quaternary: #E0E0E4;
+
+  --color-neon: #15803d;
+  --color-neon-dim: #166534;
+  --color-neon-dark: #14532d;
+
+  --color-text-primary: #111111;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #888888;
+
+  --color-danger: #DC2626;
+  --color-danger-dim: #B91C1C;
+  --color-warning: #D97706;
+  --color-warning-dim: #B45309;
+  --color-info: #0284C7;
+  --color-info-dim: #0369A1;
+
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-neon: rgba(21, 128, 61, 0.15);
+  --color-border-neon-strong: rgba(21, 128, 61, 0.3);
+
+  --color-glass: rgba(255, 255, 255, 0.85);
+  --color-glass-light: rgba(245, 245, 247, 0.7);
+
+  --shadow-neon: 0 0 15px rgba(21, 128, 61, 0.15);
+  --shadow-neon-strong: 0 0 25px rgba(21, 128, 61, 0.25), 0 0 50px rgba(21, 128, 61, 0.1);
+  --shadow-neon-text: 0 0 8px rgba(21, 128, 61, 0.3);
+
+  color-scheme: light;
+}
+
+html.light ::-webkit-scrollbar-track { background: var(--color-bg-primary); }
+html.light ::-webkit-scrollbar-thumb { background: var(--color-bg-quaternary); }
+html.light ::-webkit-scrollbar-thumb:hover { background: var(--color-neon-dim); }
+html.light ::selection {
+  background: rgba(21, 128, 61, 0.15);
+  color: var(--color-neon);
+}
+
 /* ─── Base / Reset ─── */
 @layer base {
   *, *::before, *::after {
@@ -133,6 +177,7 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
   }
 
   body {
@@ -142,6 +187,7 @@
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   #root {
@@ -182,6 +228,23 @@
     font-family: var(--font-sans);
     font-size: 1rem;
   }
+
+  /* Light mode specific base overrides for form elements */
+  html.light input,
+  html.light textarea,
+  html.light select {
+    color: var(--color-text-primary);
+  }
+
+  html.light input::placeholder,
+  html.light textarea::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  /* Light mode date inputs */
+  html.light input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: none;
+  }
 }
 
 /* ─── Utilities ─── */
@@ -210,4 +273,9 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
+}
+
+/* ─── Light mode card shadows ─── */
+html.light .bg-bg-secondary {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Target, CheckSquare, ListChecks, Calendar, Timer, BarChart3,
-  BookOpen, Trophy, Users, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Shield
+  BookOpen, Trophy, Users, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Shield, Award
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -21,10 +21,12 @@ const mainNav = [
 const communityNav = [
   { path: '/programs', label: 'Programs', icon: Trophy },
   { path: '/leaderboard', label: 'Leaderboard', icon: Users },
+  { path: '/achievements', label: 'Achievements', icon: Award },
 ];
 
 const adminNav = [
   { path: '/admin', label: 'Admin Panel', icon: Shield },
+  { path: '/admin/users', label: 'Manage Users', icon: Users },
 ];
 
 const Sidebar: React.FC = () => {

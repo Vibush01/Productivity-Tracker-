@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { User, Lock, Eye, Download, Trash2, Shield } from 'lucide-react';
+import { User, Lock, Eye, Download, Trash2, Shield, Palette } from 'lucide-react';
 import Navbar from '../components/common/Navbar';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import { useAuthStore } from '../store/authStore';
 import { useUIStore } from '../store/uiStore';
+import { useThemeStore } from '../store/themeStore';
 import api from '../services/api';
 
 const Settings: React.FC = () => {
@@ -142,6 +143,32 @@ const Settings: React.FC = () => {
             <InputField label="New Password" value={newPassword} onChange={setNewPassword} type="password" placeholder="Min 6 characters" />
             <InputField label="Confirm New Password" value={confirmPassword} onChange={setConfirmPassword} type="password" />
             <Button size="sm" onClick={handleChangePassword}>Change Password</Button>
+          </div>
+        </div>
+
+        {/* Appearance */}
+        <div className="bg-bg-secondary border border-border rounded-2xl p-5">
+          <SectionTitle icon={<Palette size={16} />} title="Appearance" />
+          <div>
+            <label className="block text-xs text-text-tertiary mb-2">Theme</label>
+            <div className="flex gap-2">
+              {([{ key: 'light' as const, label: '☀️ Light' }, { key: 'dark' as const, label: '🌙 Dark' }, { key: 'system' as const, label: '💻 System' }]).map(({ key, label }) => {
+                const { theme, setTheme } = useThemeStore();
+                return (
+                  <button
+                    key={key}
+                    className={`flex-1 py-2.5 px-3 rounded-[10px] text-sm font-medium transition-all duration-200 ${
+                      theme === key
+                        ? 'bg-neon/10 text-neon border border-neon'
+                        : 'bg-bg-tertiary text-text-secondary border border-border hover:border-border-neon'
+                    }`}
+                    onClick={() => setTheme(key)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 

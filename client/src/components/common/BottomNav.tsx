@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListChecks, Timer, BarChart3, MoreHorizontal, X, Calendar, BookOpen, Trophy, Users, Settings, User, Shield } from 'lucide-react';
+import { LayoutDashboard, ListChecks, Timer, BarChart3, MoreHorizontal, X, Calendar, BookOpen, Trophy, Users, Settings, User, Shield, Award } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 const mainItems = [
@@ -17,6 +17,7 @@ const moreItems = [
   { path: '/journal', icon: BookOpen, label: 'Journal' },
   { path: '/programs', icon: Trophy, label: 'Programs' },
   { path: '/leaderboard', icon: Users, label: 'Leaderboard' },
+  { path: '/achievements', icon: Award, label: 'Achievements' },
   { path: '/profile', icon: User, label: 'Profile' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];

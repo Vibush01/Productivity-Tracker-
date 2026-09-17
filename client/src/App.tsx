@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useUIStore } from './store/uiStore';
+import { useThemeStore } from './store/themeStore';
 import Sidebar from './components/common/Sidebar';
 import Toast from './components/common/Toast';
 import Landing from './pages/Landing';
@@ -18,9 +19,12 @@ import Journal from './pages/Journal';
 import Programs from './pages/Programs';
 import LeaderboardPage from './pages/Leaderboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import ManageUsers from './pages/admin/ManageUsers';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BottomNav from './components/common/BottomNav';
+import HonestyCheckIn from './components/accountability/HonestyCheckIn';
+import Achievements from './pages/Achievements';
 import './styles/index.css';
 
 // Protected Route wrapper
@@ -46,6 +50,7 @@ const ProtectedRoute: React.FC = () => {
         <Outlet />
       </main>
       <BottomNav />
+      <HonestyCheckIn />
     </div>
   );
 };
@@ -73,9 +78,11 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const App: React.FC = () => {
   const { loadUser } = useAuthStore();
   const { setIsMobile } = useUIStore();
+  const { initTheme } = useThemeStore();
 
   useEffect(() => {
     loadUser();
+    initTheme();
 
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
@@ -106,7 +113,9 @@ const App: React.FC = () => {
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/achievements" element={<Achievements />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
         </Route>
 
         {/* Catch all */}

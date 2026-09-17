@@ -1,8 +1,9 @@
 import React from 'react';
-import { Menu, Plus, User } from 'lucide-react';
+import { Menu, Plus, User, Sun, Moon } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
+import { useThemeStore } from '../../store/themeStore';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -18,6 +19,9 @@ const pageTitles: Record<string, string> = {
   '/profile': 'Profile',
   '/settings': 'Settings',
   '/admin': 'Admin Panel',
+  '/admin/users': 'Manage Users',
+  '/admin/analytics': 'Analytics',
+  '/admin/premium': 'Premium',
 };
 
 interface NavbarProps {
@@ -28,8 +32,13 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickAdd }) => {
   const location = useLocation();
   const { user } = useAuthStore();
   const { isMobile, toggleSidebar } = useUIStore();
+  const { resolvedTheme, setTheme } = useThemeStore();
 
   const title = pageTitles[location.pathname] || 'Productivity Tracker';
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <header className="fixed top-0 right-0 left-[260px] h-16 bg-bg-primary/85 backdrop-blur-2xl border-b border-border flex items-center justify-between px-6 z-[199] transition-[left] duration-300 max-lg:left-[72px] max-md:left-0">
@@ -46,6 +55,15 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickAdd }) => {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <button
+          className="flex items-center justify-center w-9 h-9 rounded-[10px] text-text-secondary hover:bg-bg-tertiary hover:text-text-primary transition-all duration-200"
+          onClick={toggleTheme}
+          title={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+        >
+          {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {onQuickAdd && (
           <button
             className="flex items-center justify-center w-9 h-9 rounded-[10px] bg-neon/10 text-neon hover:bg-neon/20 hover:shadow-[0_0_20px_rgba(57,255,20,0.3)] transition-all duration-200"

@@ -19,6 +19,8 @@ import statsRoutes from './routes/statsRoutes.js';
 import programRoutes from './routes/programRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import journalRoutes from './routes/journalRoutes.js';
+import achievementRoutes from './routes/achievementRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -54,6 +56,8 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/programs', programRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/achievements', achievementRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
