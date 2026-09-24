@@ -49,7 +49,7 @@ const LayoutProtectedRoute: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 ml-[260px] max-lg:ml-[72px] max-md:ml-0 min-w-0 transition-[margin] duration-300 pt-16 p-8 max-md:p-4 pb-[100px]">
+      <main className="flex-1 ml-[260px] max-lg:ml-[72px] max-md:ml-0 min-w-0 transition-[margin] duration-300 p-8 pt-24 max-md:p-4 max-md:pt-20 pb-[100px]">
         <Outlet />
       </main>
       <BottomNav />

@@ -6,11 +6,12 @@ import { useUIStore } from '../../store/uiStore';
 
 interface HabitCardProps {
   habit: Habit;
+  date?: string;
   compact?: boolean;
   onEdit?: (habit: Habit) => void;
 }
 
-const HabitCard: React.FC<HabitCardProps> = ({ habit, compact = false, onEdit }) => {
+const HabitCard: React.FC<HabitCardProps> = ({ habit, date, compact = false, onEdit }) => {
   const { logHabit, deleteLog, archiveHabit, deleteHabit } = useHabitStore();
   const { showToast } = useUIStore();
   const [showMenu, setShowMenu] = useState(false);
@@ -19,13 +20,14 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, compact = false, onEdit })
 
   const handleToggle = async () => {
     try {
+      const targetDate = date ? new Date(date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      
       if (habit.todayCompleted) {
-        const today = new Date().toISOString().split('T')[0];
-        await deleteLog(habit._id, today);
+        await deleteLog(habit._id, targetDate);
         showToast('info', `"${habit.title}" unmarked`);
       } else {
         setAnimateCheck(true);
-        const result = await logHabit(habit._id, { completed: true });
+        const result = await logHabit(habit._id, { completed: true, date: targetDate });
         if (result.xpGained > 0) showToast('success', `+${result.xpGained} XP earned!`);
         if (result.leveledUp) showToast('success', `🎉 Level Up! You're now Level ${result.newLevel}!`);
         if (result.accountabilityMessage && Math.random() < 0.15) {

@@ -4,10 +4,10 @@
 /* ─── Tailwind v4 Theme (Design System) ─── */
 @theme {
   /* Colors — Dark mode defaults (overridden by .light class below) */
-  --color-bg-primary: #0A0A0A;
-  --color-bg-secondary: #111111;
-  --color-bg-tertiary: #1A1A1A;
-  --color-bg-quaternary: #222222;
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0A0A0A;
+  --color-bg-tertiary: #141414;
+  --color-bg-quaternary: #1F1F1F;
 
   --color-neon: #39FF14;
   --color-neon-dim: #2ECC0F;
@@ -54,6 +54,7 @@
   --shadow-neon: 0 0 20px rgba(57, 255, 20, 0.3);
   --shadow-neon-strong: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
   --shadow-neon-text: 0 0 10px rgba(57, 255, 20, 0.5);
+  --shadow-cta: 0 30px 60px rgba(0, 0, 0, 0.8);
 
   /* Animations */
   --animate-fade-in: fade-in 0.2s ease-out;
@@ -122,10 +123,10 @@
 
 /* ─── Light Mode Override ─── */
 html.light {
-  --color-bg-primary: #F5F5F7;
+  --color-bg-primary: #FAFAFA;
   --color-bg-secondary: #FFFFFF;
-  --color-bg-tertiary: #EEEEF0;
-  --color-bg-quaternary: #E0E0E4;
+  --color-bg-tertiary: #F0F0F0;
+  --color-bg-quaternary: #E5E5E5;
 
   --color-neon: #15803d;
   --color-neon-dim: #166534;
@@ -152,6 +153,7 @@ html.light {
   --shadow-neon: 0 0 15px rgba(21, 128, 61, 0.15);
   --shadow-neon-strong: 0 0 25px rgba(21, 128, 61, 0.25), 0 0 50px rgba(21, 128, 61, 0.1);
   --shadow-neon-text: 0 0 8px rgba(21, 128, 61, 0.3);
+  --shadow-cta: 0 30px 60px rgba(0, 0, 0, 0.12);
 
   color-scheme: light;
 }
@@ -186,7 +188,6 @@ html.light ::selection {
     color: var(--color-text-primary);
     line-height: 1.6;
     min-height: 100vh;
-    overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 

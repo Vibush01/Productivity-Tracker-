@@ -71,7 +71,7 @@ const Calendar: React.FC = () => {
             {/* Day cells */}
             {isLoading ? (
               <div className="grid grid-cols-7 gap-0.5">
-                {Array.from({ length: 42 }).map((_, i) => <div key={i} className="skeleton aspect-square rounded-[10px]" />)}
+                {Array.from({ length: 42 }).map((_, i) => <div key={i} className="skeleton h-16 md:h-20 lg:h-24 rounded-[10px]" />)}
               </div>
             ) : (
               <div className="grid grid-cols-7 gap-0.5">
@@ -96,7 +96,7 @@ const Calendar: React.FC = () => {
                   return (
                     <button
                       key={i}
-                      className={`aspect-square rounded-[10px] flex flex-col items-center justify-center gap-0.5 transition-all duration-200 relative ${
+                      className={`h-16 md:h-20 lg:h-24 rounded-[10px] flex flex-col items-center justify-center gap-0.5 transition-all duration-200 relative ${
                         isCurrentMonth ? 'text-text-primary hover:bg-bg-tertiary' : 'text-text-tertiary/30'
                       } ${isToday ? 'border border-neon' : ''} ${isSelected ? 'border-2 border-neon bg-neon/10' : ''} ${bgStyle}`}
                       onClick={() => isCurrentMonth && setSelectedDate(isSelected ? null : dateKey)}

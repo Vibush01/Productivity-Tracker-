@@ -64,7 +64,7 @@ const Sidebar: React.FC = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[199]" onClick={toggleSidebar} />
       )}
       <aside
-        className={`fixed left-0 top-0 bottom-0 bg-bg-secondary border-r border-border flex flex-col z-[200] transition-[width] duration-300 overflow-x-hidden overflow-y-auto ${
+        className={`fixed left-0 top-0 bottom-0 bg-bg-secondary border-r border-border flex flex-col z-[200] transition-[width] duration-300 ${
           sidebarCollapsed && !isMobile ? 'w-[72px]' : 'w-[260px]'
         } ${isMobile ? 'w-[260px] animate-slide-in-left' : ''} max-md:hidden ${isMobile && sidebarOpen ? '!flex max-md:!flex' : ''}`}
       >
@@ -118,27 +118,34 @@ const Sidebar: React.FC = () => {
 
           {/* User card */}
           {user && (
-            <div className="flex items-center gap-2.5 p-3 mt-2 rounded-[10px] bg-bg-tertiary">
-              <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-neon-dark to-neon flex items-center justify-center font-bold text-sm text-black shrink-0 overflow-hidden">
-                {user.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span>{user.name.charAt(0).toUpperCase()}</span>
-                )}
-                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-neon text-black text-[9px] font-bold flex items-center justify-center border-2 border-bg-tertiary">
+            <div className="flex items-center gap-3 p-3 mt-2 rounded-[12px] bg-bg-tertiary border border-border/40">
+              <div className="relative w-10 h-10 shrink-0">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-neon-dark to-neon flex items-center justify-center font-bold text-base text-black overflow-hidden shadow-sm">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-[22px] h-[22px] rounded-full bg-bg-secondary text-neon text-[10px] font-bold flex items-center justify-center border-2 border-bg-tertiary shadow-sm">
                   {user.level}
                 </div>
               </div>
               {(!sidebarCollapsed || isMobile) && (
-                <div className="flex-1 min-w-0">
-                  <span className="block text-sm font-semibold text-text-primary truncate">{user.name}</span>
-                  <div className="h-[3px] bg-bg-quaternary rounded-full mt-1 mb-0.5 overflow-hidden">
-                    <div
-                      className="h-full bg-neon rounded-full transition-[width] duration-500 shadow-[0_0_6px_rgba(57,255,20,0.4)]"
-                      style={{ width: `${levelProgress}%` }}
-                    />
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <span className="block text-sm font-semibold text-text-primary truncate mb-1.5">{user.name}</span>
+                  <div>
+                    <div className="flex justify-between items-center text-[10px] font-bold text-text-secondary mb-1 uppercase tracking-wide">
+                      <span>Lvl {user.level}</span>
+                      <span className="text-neon">{user.xp} XP</span>
+                    </div>
+                    <div className="h-1.5 bg-bg-quaternary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-neon rounded-full transition-[width] duration-500 shadow-[0_0_6px_rgba(57,255,20,0.4)]"
+                        style={{ width: `${levelProgress}%` }}
+                      />
+                    </div>
                   </div>
-                  <span className="text-[10px] text-text-tertiary font-mono">Level {user.level} • {user.xp} XP</span>
                 </div>
               )}
             </div>

@@ -6,7 +6,9 @@ import { useHabitStore } from '../store/habitStore';
 import HabitCard from '../components/habits/HabitCard';
 import QuoteCard from '../components/accountability/QuoteCard';
 import Navbar from '../components/common/Navbar';
+import DateSlider from '../components/common/DateSlider';
 import api from '../services/api';
+import { isSameDay, startOfDay } from 'date-fns';
 import type { Quote } from '../types';
 
 interface TaskItem {
@@ -21,27 +23,36 @@ const Dashboard: React.FC = () => {
   const { user } = useAuthStore();
   const { habits, fetchHabits } = useHabitStore();
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<Date>(startOfDay(new Date()));
   const [quote, setQuote] = useState<Quote | null>(null);
   const [upcomingTasks, setUpcomingTasks] = useState<TaskItem[]>([]);
   const [weeklyStats, setWeeklyStats] = useState<{ completed: number; total: number; xpEarned: number } | null>(null);
 
   useEffect(() => {
-    fetchHabits();
-    api.get('/motivation/daily-quote').then(({ data }) => {
-      if (data.success) setQuote(data.data);
-    }).catch(() => {});
+    fetchHabits(false, selectedDate.toISOString());
 
-    // Fetch upcoming tasks (due within 3 days)
     api.get('/tasks').then(({ data }) => {
       if (data.success) {
-        const now = new Date();
-        const threeDays = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-        const upcoming = (data.data as TaskItem[])
-          .filter((t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) <= threeDays)
+        // Filter tasks that are due on or before the selected date, and not completed 
+        // (or completed ON the selected date - though for simplicity we'll just show tasks due on this date)
+        const selectedDateStr = selectedDate.toISOString().split('T')[0];
+        
+        const dateTasks = (data.data as TaskItem[])
+          .filter((t) => {
+            if (!t.dueDate) return false;
+            const taskDate = new Date(t.dueDate).toISOString().split('T')[0];
+            return taskDate === selectedDateStr && !t.isCompleted;
+          })
           .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
           .slice(0, 5);
-        setUpcomingTasks(upcoming);
+        setUpcomingTasks(dateTasks);
       }
+    }).catch(() => {});
+  }, [selectedDate]);
+
+  useEffect(() => {
+    api.get('/motivation/daily-quote').then(({ data }) => {
+      if (data.success) setQuote(data.data);
     }).catch(() => {});
 
     // Fetch weekly stats
@@ -211,22 +222,27 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
+          {/* Date Slider */}
+          <DateSlider selectedDate={selectedDate} onChange={setSelectedDate} />
+
           {/* Today's Habits */}
           <div className="min-w-0">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-base font-semibold flex items-center gap-2">
-                <Target size={18} className="text-neon" /> Today's Habits
+                <Target size={18} className="text-neon" /> {isSameDay(selectedDate, new Date()) ? "Today's" : "Selected Date"} Habits
               </h2>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-neon/10 text-neon border border-neon/20">
                   {completedToday}/{todayHabits.length}
                 </span>
-                <button
-                  onClick={() => navigate('/focus', { state: { title: 'Deep Work Session', type: 'Session', duration: 25 * 60 } })}
-                  className="px-2 py-1 bg-neon/10 text-neon rounded text-[10px] uppercase font-bold hover:bg-neon/20 transition-colors flex items-center gap-1"
-                >
-                  <Target size={12} /> Focus
-                </button>
+                {isSameDay(selectedDate, new Date()) && (
+                  <button
+                    onClick={() => navigate('/focus', { state: { title: 'Deep Work Session', type: 'Session', duration: 25 * 60 } })}
+                    className="px-2 py-1 bg-neon/10 text-neon rounded text-[10px] uppercase font-bold hover:bg-neon/20 transition-colors flex items-center gap-1"
+                  >
+                    <Target size={12} /> Focus
+                  </button>
+                )}
               </div>
             </div>
 
@@ -246,7 +262,7 @@ const Dashboard: React.FC = () => {
               <div className="flex flex-col gap-1.5 max-h-[340px] overflow-y-auto pr-1">
                 {todayHabits.map((habit, i) => (
                   <div key={habit._id} className="animate-slide-up" style={{ animationDelay: `${i * 30}ms` }}>
-                    <HabitCard habit={habit} compact />
+                    <HabitCard habit={habit} date={selectedDate.toISOString()} compact />
                   </div>
                 ))}
               </div>

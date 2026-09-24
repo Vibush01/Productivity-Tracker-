@@ -7,7 +7,7 @@ interface HabitState {
   categories: Category[];
   isLoading: boolean;
   error: string | null;
-  fetchHabits: (archived?: boolean) => Promise<void>;
+  fetchHabits: (archived?: boolean, date?: string) => Promise<void>;
   createHabit: (data: any) => Promise<Habit>;
   updateHabit: (id: string, data: any) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
@@ -28,10 +28,14 @@ export const useHabitStore = create<HabitState>((set) => ({
   isLoading: false,
   error: null,
 
-  fetchHabits: async (archived = false) => {
+  fetchHabits: async (archived = false, date?: string) => {
     try {
       set({ isLoading: true });
-      const { data } = await api.get(`/habits?archived=${archived}`);
+      const queryParams = new URLSearchParams();
+      queryParams.append('archived', archived.toString());
+      if (date) queryParams.append('date', date);
+
+      const { data } = await api.get(`/habits?${queryParams.toString()}`);
       if (data.success) {
         set({ habits: data.data, isLoading: false });
       }

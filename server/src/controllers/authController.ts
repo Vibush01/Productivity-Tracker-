@@ -5,7 +5,7 @@ import Category, { DEFAULT_CATEGORIES } from '../models/Category.js';
 import { env } from '../config/env.js';
 
 const generateToken = (id: string, role: string): string => {
-  return jwt.sign({ id, role }, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRE });
+  return jwt.sign({ id, role }, env.JWT_SECRET as string, { expiresIn: env.JWT_EXPIRE as any });
 };
 
 // @route   POST /api/auth/register

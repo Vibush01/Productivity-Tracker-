@@ -22,25 +22,26 @@ export const getHabits = async (req: Request, res: Response): Promise<void> => {
       .populate('category', 'name icon color')
       .sort({ order: 1, createdAt: -1 });
 
-    // Get streak data for each habit
     const habitsWithStreaks = await Promise.all(
       habits.map(async (habit) => {
         const currentStreak = await calculateCurrentStreak(habit._id);
         const longestStreak = await calculateLongestStreak(habit._id);
 
-        // Get today's log
-        const today = normalizeDate(new Date());
-        const todayLog = await HabitLog.findOne({
+        // Get log for the requested date (or today)
+        const dateQuery = req.query.date ? new Date(req.query.date as string) : new Date();
+        const targetDate = normalizeDate(dateQuery);
+        
+        const dateLog = await HabitLog.findOne({
           habitId: habit._id,
-          date: today,
+          date: targetDate,
         });
 
         return {
           ...habit.toObject(),
           currentStreak,
           longestStreak,
-          todayCompleted: todayLog?.completed || false,
-          todayValue: todayLog?.value || 0,
+          todayCompleted: dateLog?.completed || false,
+          todayValue: dateLog?.value || 0,
         };
       })
     );
@@ -196,7 +197,7 @@ export const logHabit = async (req: Request, res: Response): Promise<void> => {
 // @route   DELETE /api/habits/:id/log/:date
 export const deleteLog = async (req: Request, res: Response): Promise<void> => {
   try {
-    const logDate = normalizeDate(new Date(req.params.date));
+    const logDate = normalizeDate(new Date(req.params.date as string));
 
     const log = await HabitLog.findOneAndDelete({
       habitId: req.params.id,
@@ -331,9 +332,8 @@ export const getHabitDetail = async (req: Request, res: Response): Promise<void>
     const completionRate = totalLogs > 0 ? Math.round((totalCompleted / totalLogs) * 100) : 0;
 
     // Current streak
-    const sortedDates = completedLogs.map((l) => normalizeDate(l.date)).sort((a, b) => b.getTime() - a.getTime());
-    const currentStreak = calculateCurrentStreak(sortedDates);
-    const longestStreak = calculateLongestStreak(sortedDates);
+    const currentStreak = await calculateCurrentStreak(habit._id);
+    const longestStreak = await calculateLongestStreak(habit._id);
 
     // Completion by day of week
     const dayDistribution = [0, 0, 0, 0, 0, 0, 0];
