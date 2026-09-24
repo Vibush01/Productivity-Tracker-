@@ -1,0 +1,14 @@
+{
+  "name": "@productivity-tracker/shared",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types and utilities for Productivity Tracker (web + mobile)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
