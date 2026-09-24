@@ -13,6 +13,8 @@ interface TaskCardProps {
   onComplete: () => void;
 }
 
+import { Swipeable } from 'react-native-gesture-handler';
+
 export function TaskCard({ task, onPress, onComplete }: TaskCardProps) {
   const { colors } = useTheme();
 
@@ -31,53 +33,66 @@ export function TaskCard({ task, onPress, onComplete }: TaskCardProps) {
   const priorityColor = getPriorityColor();
   const isOverdue = task.dueDate && isPast(new Date(task.dueDate)) && !isToday(new Date(task.dueDate)) && !task.completed;
 
+  const renderRightActions = () => {
+    return (
+      <TouchableOpacity
+        style={[styles.swipeAction, { backgroundColor: colors.neon }]}
+        onPress={onComplete}
+      >
+        <Ionicons name="checkmark" size={24} color={colors.bgPrimary} />
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <Card style={[styles.card, task.completed && { opacity: 0.6 }]} onPress={onPress}>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={[
-            styles.checkButton,
-            {
-              backgroundColor: task.completed ? colors.neon : colors.bgTertiary,
-              borderColor: task.completed ? colors.neon : priorityColor,
-            },
-          ]}
-          onPress={onComplete}
-          activeOpacity={0.7}
-        >
-          {task.completed && (
-            <Ionicons name="checkmark" size={16} color={colors.bgPrimary} />
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.content}>
-          <ThemedText
-            variant="body"
-            style={task.completed ? { textDecorationLine: 'line-through', color: colors.textSecondary } : {}}
-            numberOfLines={1}
+    <Swipeable renderRightActions={renderRightActions}>
+      <Card style={[styles.card, task.completed && { opacity: 0.6 }]} onPress={onPress}>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[
+              styles.checkButton,
+              {
+                backgroundColor: task.completed ? colors.neon : colors.bgTertiary,
+                borderColor: task.completed ? colors.neon : priorityColor,
+              },
+            ]}
+            onPress={onComplete}
+            activeOpacity={0.7}
           >
-            {task.title}
-          </ThemedText>
+            {task.completed && (
+              <Ionicons name="checkmark" size={16} color={colors.bgPrimary} />
+            )}
+          </TouchableOpacity>
 
-          {task.dueDate && (
-            <View style={styles.dateRow}>
-              <Ionicons
-                name="calendar-outline"
-                size={14}
-                color={isOverdue ? colors.danger : colors.textTertiary}
-              />
-              <ThemedText
-                variant="caption"
-                color={isOverdue ? 'danger' : 'tertiary'}
-                style={styles.dateText}
-              >
-                {format(new Date(task.dueDate), 'MMM d, yyyy')}
-              </ThemedText>
-            </View>
-          )}
+          <View style={styles.content}>
+            <ThemedText
+              variant="body"
+              style={task.completed ? { textDecorationLine: 'line-through', color: colors.textSecondary } : {}}
+              numberOfLines={1}
+            >
+              {task.title}
+            </ThemedText>
+
+            {task.dueDate && (
+              <View style={styles.dateRow}>
+                <Ionicons
+                  name="calendar-outline"
+                  size={14}
+                  color={isOverdue ? colors.danger : colors.textTertiary}
+                />
+                <ThemedText
+                  variant="caption"
+                  color={isOverdue ? 'danger' : 'tertiary'}
+                  style={styles.dateText}
+                >
+                  {format(new Date(task.dueDate), 'MMM d, yyyy')}
+                </ThemedText>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </Card>
+      </Card>
+    </Swipeable>
   );
 }
 
@@ -110,5 +125,13 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 12,
+  },
+  swipeAction: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    marginBottom: Spacing.sm,
+    borderTopRightRadius: BorderRadius.lg,
+    borderBottomRightRadius: BorderRadius.lg,
   },
 });
