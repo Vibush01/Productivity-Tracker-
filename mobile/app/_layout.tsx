@@ -18,6 +18,8 @@ import 'react-native-reanimated';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
 import { LoadingScreen } from '../components/common';
+import { useSyncQueue } from '../hooks/useSyncQueue';
+import { registerBackgroundSync } from '../services/backgroundTasks';
 
 export {
   ErrorBoundary,
@@ -73,6 +75,7 @@ export default function RootLayout() {
     async function bootstrap() {
       await initTheme();
       await initAuth();
+      await registerBackgroundSync();
     }
     bootstrap();
   }, []);
@@ -92,6 +95,9 @@ export default function RootLayout() {
 
   // Auth-based routing
   useAuthGate();
+
+  // Background/Foreground sync queue processor
+  useSyncQueue();
 
   if (!appReady) {
     return <LoadingScreen message="Starting up..." />;

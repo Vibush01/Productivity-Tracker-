@@ -21,6 +21,7 @@ import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import journalRoutes from './routes/journalRoutes.js';
 import achievementRoutes from './routes/achievementRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import syncRoutes from './routes/syncRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -64,6 +65,7 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/sync', syncRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
