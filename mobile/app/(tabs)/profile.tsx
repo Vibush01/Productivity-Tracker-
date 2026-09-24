@@ -3,11 +3,13 @@
  */
 import React from 'react';
 import { ScrollView, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedView, ThemedText, Button, Card, Badge } from '../../components/common';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore, type ThemePreference } from '../../store/themeStore';
+import { usePurchaseStore } from '../../store/purchaseStore';
 import { Spacing, BorderRadius, FontSize } from '../../constants/layout';
 
 const themeOptions: { value: ThemePreference; label: string; icon: string }[] = [
@@ -22,6 +24,8 @@ export default function ProfileScreen() {
   const logout = useAuthStore((s) => s.logout);
   const preference = useThemeStore((s) => s.preference);
   const setThemePref = useThemeStore((s) => s.setPreference);
+  const isPremium = usePurchaseStore((s) => s.isPremium);
+  const router = useRouter();
 
   const handleLogout = () => {
     Alert.alert(
@@ -63,6 +67,30 @@ export default function ProfileScreen() {
             </View>
           </View>
         </Card>
+
+        {/* Premium Banner */}
+        {!isPremium && (
+          <TouchableOpacity 
+            activeOpacity={0.8} 
+            onPress={() => router.push('/(modals)/paywall' as any)}
+            style={{ marginBottom: Spacing.lg }}
+          >
+            <Card variant="neon" style={styles.premiumBanner}>
+              <View style={styles.premiumRow}>
+                <Ionicons name="diamond" size={24} color={colors.bgPrimary} />
+                <View style={{ flex: 1 }}>
+                  <ThemedText variant="subtitle" style={{ color: colors.bgPrimary }}>
+                    Upgrade to Premium
+                  </ThemedText>
+                  <ThemedText variant="caption" style={{ color: colors.bgPrimary, opacity: 0.8 }}>
+                    Unlock all features and support development.
+                  </ThemedText>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.bgPrimary} />
+              </View>
+            </Card>
+          </TouchableOpacity>
+        )}
 
         {/* Theme Selector */}
         <ThemedText variant="label" color="secondary" style={styles.sectionLabel}>
@@ -160,6 +188,14 @@ const styles = StyleSheet.create({
   },
   userInfo: { flex: 1 },
   badges: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm },
+  premiumBanner: {
+    padding: Spacing.md,
+  },
+  premiumRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
   sectionLabel: {
     marginTop: Spacing['2xl'],
     marginBottom: Spacing.sm,

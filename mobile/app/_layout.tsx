@@ -17,6 +17,7 @@ import 'react-native-reanimated';
 
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
+import { usePurchaseStore } from '../store/purchaseStore';
 import { LoadingScreen } from '../components/common';
 import { useSyncQueue } from '../hooks/useSyncQueue';
 import { registerBackgroundSync } from '../services/backgroundTasks';
@@ -65,6 +66,7 @@ export default function RootLayout() {
   const colors = useThemeStore((s) => s.colors);
   const initTheme = useThemeStore((s) => s.initialize);
   const initAuth = useAuthStore((s) => s.initialize);
+  const initPurchase = usePurchaseStore((s) => s.initialize);
   const isAuthLoading = useAuthStore((s) => s.isLoading);
   const user = useAuthStore((s) => s.user);
 
@@ -77,6 +79,7 @@ export default function RootLayout() {
     async function bootstrap() {
       await initTheme();
       await initAuth();
+      await initPurchase();
       await registerBackgroundSync();
     }
     bootstrap();
@@ -127,6 +130,13 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="(modals)/paywall" 
+          options={{ 
+            presentation: 'modal', 
+            headerShown: false 
+          }} 
+        />
       </Stack>
     </>
   );
