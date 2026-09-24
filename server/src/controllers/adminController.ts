@@ -214,3 +214,108 @@ export const toggleDisableUser = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ success: false, error: 'Server error toggling user status' });
   }
 };
+
+// ─── Templates ──────────────────────────────────────
+export const getTemplates = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const Template = (await import('../models/Template.js')).default;
+    const templates = await Template.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: templates });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching templates' });
+  }
+};
+
+export const createTemplate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Template = (await import('../models/Template.js')).default;
+    const template = await Template.create(req.body);
+    res.status(201).json({ success: true, data: template });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error creating template' });
+  }
+};
+
+export const updateTemplate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Template = (await import('../models/Template.js')).default;
+    const template = await Template.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, data: template });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error updating template' });
+  }
+};
+
+export const deleteTemplate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Template = (await import('../models/Template.js')).default;
+    await Template.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Template deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error deleting template' });
+  }
+};
+
+// ─── Quotes ─────────────────────────────────────────
+export const getQuotes = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const Quote = (await import('../models/Quote.js')).default;
+    const quotes = await Quote.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: quotes });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching quotes' });
+  }
+};
+
+export const createQuote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Quote = (await import('../models/Quote.js')).default;
+    const quote = await Quote.create(req.body);
+    res.status(201).json({ success: true, data: quote });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error creating quote' });
+  }
+};
+
+export const deleteQuote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const Quote = (await import('../models/Quote.js')).default;
+    await Quote.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Quote deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error deleting quote' });
+  }
+};
+
+// ─── Broadcast Notifications ────────────────────────
+export const sendBroadcast = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { title, body, segment } = req.body;
+    // Note: segment could be 'all', 'free', 'premium'
+    let query = {};
+    if (segment === 'premium') query = { isPremium: true };
+    if (segment === 'free') query = { isPremium: false };
+    
+    const users = await User.find({ ...query, pushTokens: { $exists: true, $not: { $size: 0 } } });
+    
+    const { sendPushNotification } = await import('../utils/pushNotifications.js');
+    for (const user of users) {
+      await sendPushNotification(user._id.toString(), { title, body });
+    }
+
+    res.json({ success: true, message: `Notification broadcasted to ${users.length} users.` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error sending broadcast' });
+  }
+};
+
+// ─── Error Logs ─────────────────────────────────────
+export const getSystemLogs = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const SystemLog = (await import('../models/SystemLog.js')).default;
+    const logs = await SystemLog.find().sort({ createdAt: -1 }).limit(100);
+    res.json({ success: true, data: logs });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error fetching logs' });
+  }
+};

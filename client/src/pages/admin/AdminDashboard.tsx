@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit3, Trash2, Users, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Edit3, Trash2, Users, ToggleLeft, ToggleRight, LayoutTemplate, Bell, Database, Bug, MessageSquare, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
@@ -115,6 +116,38 @@ const AdminDashboard: React.FC = () => {
           <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }} icon={<Plus size={16} />}>
             New Program
           </Button>
+        </div>
+
+        {/* Admin Navigation */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Link to="/admin/users" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <Users size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Manage Users</span>
+          </Link>
+          <Link to="/admin/templates" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <LayoutTemplate size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Templates</span>
+          </Link>
+          <Link to="/admin/broadcast" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <Bell size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Broadcasts</span>
+          </Link>
+          <Link to="/admin/content" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <Database size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Content</span>
+          </Link>
+          <Link to="/admin/logs" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <Bug size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Error Logs</span>
+          </Link>
+          <Link to="/admin/feedback" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <MessageSquare size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Feedback</span>
+          </Link>
+          <Link to="/admin/features" className="bg-bg-secondary hover:bg-bg-tertiary border border-border rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+            <Shield size={24} className="text-neon mb-2" />
+            <span className="text-sm font-bold">Feature Flags</span>
+          </Link>
         </div>
 
         {/* Stats row */}

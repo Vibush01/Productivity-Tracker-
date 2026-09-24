@@ -20,6 +20,9 @@ import Programs from './pages/Programs';
 import LeaderboardPage from './pages/Leaderboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageUsers from './pages/admin/ManageUsers';
+import TemplateManager from './pages/admin/TemplateManager';
+import BroadcastNotifications from './pages/admin/BroadcastNotifications';
+import { ContentManager, ProgramBuilder, ErrorLogs, FeedbackInbox, FeatureFlags } from './pages/admin/AdminPlaceholders';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BottomNav from './components/common/BottomNav';
@@ -145,6 +148,13 @@ const App: React.FC = () => {
           <Route path="/habits/:id" element={<HabitDetail />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ManageUsers />} />
+          <Route path="/admin/templates" element={<TemplateManager />} />
+          <Route path="/admin/broadcast" element={<BroadcastNotifications />} />
+          <Route path="/admin/content" element={<ContentManager />} />
+          <Route path="/admin/programs" element={<ProgramBuilder />} />
+          <Route path="/admin/logs" element={<ErrorLogs />} />
+          <Route path="/admin/feedback" element={<FeedbackInbox />} />
+          <Route path="/admin/features" element={<FeatureFlags />} />
         </Route>
 
         {/* Catch all */}
