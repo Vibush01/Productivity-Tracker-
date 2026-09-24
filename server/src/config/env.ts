@@ -10,6 +10,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   JWT_EXPIRE: z.string().default('30d'),
   CLIENT_URL: z.string().default('http://localhost:5173'),
+  MOBILE_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

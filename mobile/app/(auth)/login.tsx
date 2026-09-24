@@ -1,19 +1,21 @@
 /**
  * Login Screen
+ *
+ * Uses the auth store for login — on success, the root layout's
+ * auth gate automatically navigates to (tabs).
  */
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedView, ThemedText, Input, Button } from '../../components/common';
 import { useTheme } from '../../hooks/useTheme';
+import { useAuthStore } from '../../store/authStore';
 import { Spacing, FontSize } from '../../constants/layout';
-import { api } from '../../services/api';
-import { secureStorage, storage } from '../../services/storage';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
-  const router = useRouter();
+  const login = useAuthStore((s) => s.login);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,21 +23,17 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       setError('Please enter email and password');
       return;
     }
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', { email, password });
-      if (data.success) {
-        await secureStorage.setToken(data.data.token);
-        await storage.set('user', data.data.user);
-        router.replace('/(tabs)');
-      }
+      await login(email.trim().toLowerCase(), password);
+      // Auth gate in root layout handles navigation
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.error || 'Login failed. Check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -54,21 +52,26 @@ export default function LoginScreen() {
         >
           {/* Logo / Branding */}
           <View style={styles.header}>
-            <Ionicons name="flash" size={48} color={colors.neon} />
+            <View style={[styles.iconCircle, { backgroundColor: `${colors.neon}15` }]}>
+              <Ionicons name="flash" size={40} color={colors.neon} />
+            </View>
             <ThemedText variant="hero" style={styles.brand}>
               Productivity{'\n'}Tracker
             </ThemedText>
             <ThemedText variant="body" color="secondary" style={styles.tagline}>
-              Track your habits. Build your future.
+              Track habits. Build discipline. Level up.
             </ThemedText>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
             {error ? (
-              <ThemedText variant="caption" color="danger" style={styles.error}>
-                {error}
-              </ThemedText>
+              <View style={[styles.errorBox, { backgroundColor: `${colors.danger}12` }]}>
+                <Ionicons name="alert-circle" size={16} color={colors.danger} />
+                <ThemedText variant="caption" color="danger" style={styles.errorText}>
+                  {error}
+                </ThemedText>
+              </View>
             ) : null}
 
             <Input
@@ -79,6 +82,7 @@ export default function LoginScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
+              returnKeyType="next"
               icon={<Ionicons name="mail-outline" size={20} color={colors.textTertiary} />}
             />
 
@@ -89,6 +93,8 @@ export default function LoginScreen() {
               placeholder="Your password"
               secureTextEntry
               autoComplete="password"
+              returnKeyType="done"
+              onSubmitEditing={handleLogin}
               icon={<Ionicons name="lock-closed-outline" size={20} color={colors.textTertiary} />}
             />
 
@@ -133,6 +139,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing['4xl'],
   },
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   brand: {
     textAlign: 'center',
     marginTop: Spacing.lg,
@@ -145,9 +158,15 @@ const styles = StyleSheet.create({
   form: {
     gap: Spacing.lg,
   },
-  error: {
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: 8,
+  },
+  errorText: {
+    flex: 1,
   },
   loginBtn: {
     marginTop: Spacing.sm,

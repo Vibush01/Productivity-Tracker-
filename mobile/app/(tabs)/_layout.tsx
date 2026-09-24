@@ -10,16 +10,14 @@
  */
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { useColorScheme, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
 
 type TabIcon = React.ComponentProps<typeof Ionicons>['name'];
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
+  const { colors } = useTheme();
 
   const screenOptions = {
     tabBarActiveTintColor: colors.neon,

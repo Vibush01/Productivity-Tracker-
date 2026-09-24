@@ -1,21 +1,23 @@
 /**
  * Root Layout — App entry point
  *
- * Sets up:
- * - Font loading
- * - Splash screen
- * - Navigation theme (dark/light based on system)
- * - Auth-gated routing (tabs vs auth screens)
+ * Responsibilities:
+ * 1. Load fonts and hold splash screen
+ * 2. Initialize auth store (check for saved JWT → auto-login)
+ * 3. Initialize theme store (load saved preference)
+ * 4. Auth gate: redirect to login if unauthenticated, tabs if authenticated
+ * 5. Apply themed navigation chrome
  */
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { Colors } from '../constants/colors';
+import { useAuthStore } from '../store/authStore';
+import { useThemeStore } from '../store/themeStore';
+import { LoadingScreen } from '../components/common';
 
 export {
   ErrorBoundary,
@@ -27,27 +29,72 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
+/**
+ * AuthGate — watches auth state and redirects:
+ * - Unauthenticated user on a protected route → push to login
+ * - Authenticated user on an auth route → replace to tabs
+ */
+function useAuthGate() {
+  const router = useRouter();
+  const segments = useSegments();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
-  const [loaded, error] = useFonts({
+  useEffect(() => {
+    if (isLoading) return; // Wait until auth check is complete
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!isAuthenticated && !inAuthGroup) {
+      // Not logged in and trying to access protected route
+      router.replace('/(auth)/login');
+    } else if (isAuthenticated && inAuthGroup) {
+      // Logged in but still on auth screen
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, isLoading, segments]);
+}
+
+export default function RootLayout() {
+  const [appReady, setAppReady] = useState(false);
+
+  const isDark = useThemeStore((s) => s.isDark);
+  const colors = useThemeStore((s) => s.colors);
+  const initTheme = useThemeStore((s) => s.initialize);
+  const initAuth = useAuthStore((s) => s.initialize);
+  const isAuthLoading = useAuthStore((s) => s.isLoading);
+
+  const [loaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  // Initialize stores on mount
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    async function bootstrap() {
+      await initTheme();
+      await initAuth();
+    }
+    bootstrap();
+  }, []);
 
+  // Handle font errors
   useEffect(() => {
-    if (loaded) {
+    if (fontError) throw fontError;
+  }, [fontError]);
+
+  // Hide splash when fonts loaded and auth check complete
+  useEffect(() => {
+    if (loaded && !isAuthLoading) {
+      setAppReady(true);
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isAuthLoading]);
 
-  if (!loaded) {
-    return null;
+  // Auth-based routing
+  useAuthGate();
+
+  if (!appReady) {
+    return <LoadingScreen message="Starting up..." />;
   }
 
   return (
@@ -60,6 +107,7 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: '700' },
           headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.bgPrimary },
+          animation: 'slide_from_right',
         }}
       >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

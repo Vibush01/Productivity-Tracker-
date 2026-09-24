@@ -29,8 +29,14 @@ const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 // Middleware
+// In development, allow all origins (Expo uses dynamic ports).
+// In production, restrict to known client URLs.
+const corsOrigins = env.NODE_ENV === 'development'
+  ? true
+  : [env.CLIENT_URL, env.MOBILE_URL].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: env.CLIENT_URL,
+  origin: corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));

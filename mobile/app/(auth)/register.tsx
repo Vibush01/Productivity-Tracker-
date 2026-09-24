@@ -1,19 +1,21 @@
 /**
  * Register Screen
+ *
+ * Uses the auth store for registration — on success, the root layout's
+ * auth gate automatically navigates to (tabs).
  */
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedView, ThemedText, Input, Button } from '../../components/common';
 import { useTheme } from '../../hooks/useTheme';
-import { Spacing, FontSize } from '../../constants/layout';
-import { api } from '../../services/api';
-import { secureStorage, storage } from '../../services/storage';
+import { useAuthStore } from '../../store/authStore';
+import { Spacing } from '../../constants/layout';
 
 export default function RegisterScreen() {
   const { colors } = useTheme();
-  const router = useRouter();
+  const register = useAuthStore((s) => s.register);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,7 +24,7 @@ export default function RegisterScreen() {
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
+    if (!name.trim() || !email.trim() || !password) {
       setError('All fields are required');
       return;
     }
@@ -33,12 +35,8 @@ export default function RegisterScreen() {
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/register', { name, email, password });
-      if (data.success) {
-        await secureStorage.setToken(data.data.token);
-        await storage.set('user', data.data.user);
-        router.replace('/(tabs)');
-      }
+      await register(name.trim(), email.trim().toLowerCase(), password);
+      // Auth gate in root layout handles navigation
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
@@ -59,7 +57,9 @@ export default function RegisterScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Ionicons name="flash" size={48} color={colors.neon} />
+            <View style={[styles.iconCircle, { backgroundColor: `${colors.neon}15` }]}>
+              <Ionicons name="flash" size={40} color={colors.neon} />
+            </View>
             <ThemedText variant="title" style={styles.title}>
               Create Account
             </ThemedText>
@@ -71,9 +71,12 @@ export default function RegisterScreen() {
           {/* Form */}
           <View style={styles.form}>
             {error ? (
-              <ThemedText variant="caption" color="danger" style={styles.error}>
-                {error}
-              </ThemedText>
+              <View style={[styles.errorBox, { backgroundColor: `${colors.danger}12` }]}>
+                <Ionicons name="alert-circle" size={16} color={colors.danger} />
+                <ThemedText variant="caption" color="danger" style={styles.errorText}>
+                  {error}
+                </ThemedText>
+              </View>
             ) : null}
 
             <Input
@@ -83,6 +86,7 @@ export default function RegisterScreen() {
               placeholder="Your name"
               autoCapitalize="words"
               autoComplete="name"
+              returnKeyType="next"
               icon={<Ionicons name="person-outline" size={20} color={colors.textTertiary} />}
             />
 
@@ -94,6 +98,7 @@ export default function RegisterScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
+              returnKeyType="next"
               icon={<Ionicons name="mail-outline" size={20} color={colors.textTertiary} />}
             />
 
@@ -104,6 +109,8 @@ export default function RegisterScreen() {
               placeholder="Min 6 characters"
               secureTextEntry
               autoComplete="new-password"
+              returnKeyType="done"
+              onSubmitEditing={handleRegister}
               icon={<Ionicons name="lock-closed-outline" size={20} color={colors.textTertiary} />}
             />
 
@@ -148,15 +155,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing['4xl'],
   },
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: {
     marginTop: Spacing.lg,
   },
   form: {
     gap: Spacing.lg,
   },
-  error: {
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: 8,
+  },
+  errorText: {
+    flex: 1,
   },
   registerBtn: {
     marginTop: Spacing.sm,

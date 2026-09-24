@@ -1,19 +1,18 @@
-import { useColorScheme } from 'react-native';
-import { Colors, type ThemeColors } from '../constants/colors';
+import { useThemeStore } from '../store/themeStore';
+import type { ThemeColors } from '../constants/colors';
 
 /**
- * useTheme — returns the correct color palette based on the device's
- * current color scheme (dark or light).
+ * useTheme — returns the active color palette from the theme store.
+ *
+ * Reads from the Zustand theme store which respects user preference
+ * (system / light / dark) and persists across app restarts.
  *
  * Usage:
  *   const { colors, isDark } = useTheme();
  *   <View style={{ backgroundColor: colors.bgPrimary }} />
  */
 export function useTheme(): { colors: ThemeColors; isDark: boolean } {
-  const scheme = useColorScheme();
-  const isDark = scheme === 'dark';
-  return {
-    colors: isDark ? Colors.dark : Colors.light,
-    isDark,
-  };
+  const colors = useThemeStore((s) => s.colors);
+  const isDark = useThemeStore((s) => s.isDark);
+  return { colors, isDark };
 }

@@ -3,13 +3,10 @@
  * No tab bar, no header — clean full-screen auth experience.
  */
 import { Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function AuthLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
+  const { colors } = useTheme();
 
   return (
     <Stack
