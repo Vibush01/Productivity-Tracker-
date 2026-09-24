@@ -20,6 +20,7 @@ import { useThemeStore } from '../store/themeStore';
 import { LoadingScreen } from '../components/common';
 import { useSyncQueue } from '../hooks/useSyncQueue';
 import { registerBackgroundSync } from '../services/backgroundTasks';
+import { registerForPushNotificationsAsync } from '../services/notifications';
 
 export {
   ErrorBoundary,
@@ -65,6 +66,7 @@ export default function RootLayout() {
   const initTheme = useThemeStore((s) => s.initialize);
   const initAuth = useAuthStore((s) => s.initialize);
   const isAuthLoading = useAuthStore((s) => s.isLoading);
+  const user = useAuthStore((s) => s.user);
 
   const [loaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -79,6 +81,13 @@ export default function RootLayout() {
     }
     bootstrap();
   }, []);
+
+  // Register push notifications when user becomes authenticated
+  useEffect(() => {
+    if (user) {
+      registerForPushNotificationsAsync();
+    }
+  }, [user]);
 
   // Handle font errors
   useEffect(() => {

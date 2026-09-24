@@ -22,6 +22,7 @@ export interface User {
   level: number;
   streakFreezes: number;
   achievements: string[];
+  pushTokens?: string[];
   isPremium: boolean;
   premiumPlan: PremiumPlan;
   premiumExpiresAt?: string;

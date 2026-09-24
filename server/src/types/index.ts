@@ -21,6 +21,7 @@ export interface IUser extends Document {
   level: number;
   streakFreezes: number;
   achievements: string[];
+  pushTokens?: string[];
   createdAt: Date;
   updatedAt: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;

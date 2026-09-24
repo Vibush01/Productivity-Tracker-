@@ -29,6 +29,7 @@ const userSchema = new Schema<IUser>(
     level: { type: Number, default: 1 },
     streakFreezes: { type: Number, default: 0, max: 3 },
     achievements: [{ type: String }],
+    pushTokens: [{ type: String }],
   },
   { timestamps: true }
 );

@@ -275,3 +275,33 @@ export const exportData = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// @route   POST /api/auth/push-token
+// @desc    Save Expo Push Token for the user
+export const savePushToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      res.status(400).json({ success: false, error: 'Push token is required' });
+      return;
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404).json({ success: false, error: 'User not found' });
+      return;
+    }
+
+    if (!user.pushTokens) {
+      user.pushTokens = [];
+    }
+    
+    if (!user.pushTokens.includes(token)) {
+      user.pushTokens.push(token);
+      await user.save();
+    }
+
+    res.json({ success: true, message: 'Push token saved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error saving push token' });
+  }
+};
