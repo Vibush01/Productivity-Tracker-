@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../../services/api';
-import Button from '../../common/Button';
-import Card from '../../common/Card';
+import api from '../../services/api';
+import Button from '../../components/common/Button';
+import Card from '../../components/common/Card';
 
 interface Template {
   _id: string;

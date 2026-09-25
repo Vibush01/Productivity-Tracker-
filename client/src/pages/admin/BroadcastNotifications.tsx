@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { api } from '../../../services/api';
-import Button from '../../common/Button';
-import Card from '../../common/Card';
-import Input from '../../common/Input';
-import { useUIStore } from '../../../store/uiStore';
+import api from '../../services/api';
+import Button from '../../components/common/Button';
+import Card from '../../components/common/Card';
+import Input from '../../components/common/Input';
+import { useUIStore } from '../../store/uiStore';
 
 const BroadcastNotifications: React.FC = () => {
   const [title, setTitle] = useState('');

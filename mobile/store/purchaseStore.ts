@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import Purchases, { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+const isExpoGo = Constants.appOwnership === 'expo';
 
 const REVENUECAT_API_KEY_IOS = 'YOUR_APPLE_API_KEY';
 const REVENUECAT_API_KEY_ANDROID = 'YOUR_GOOGLE_API_KEY';
@@ -20,6 +23,11 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
   isLoading: false,
 
   initialize: async () => {
+    if (isExpoGo) {
+      console.log('[Purchases] Skipped — RevenueCat not available in Expo Go.');
+      return;
+    }
+
     try {
       if (Platform.OS === 'ios') {
         Purchases.configure({ apiKey: REVENUECAT_API_KEY_IOS });
@@ -28,7 +36,6 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       }
 
       const customerInfo = await Purchases.getCustomerInfo();
-      // Assuming 'premium' is the identifier for the entitlement
       const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
       
       const offerings = await Purchases.getOfferings();
