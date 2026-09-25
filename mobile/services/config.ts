@@ -8,7 +8,7 @@
 // For local development, use your machine's IP (not localhost)
 // because the mobile emulator runs in its own network namespace.
 // To find your IP: run `ipconfig getifaddr en0` in terminal.
-const DEV_API_URL = 'http://localhost:5000/api';
+const DEV_API_URL = 'http://10.169.135.67:5000/api';
 
 export const config = {
   API_URL: DEV_API_URL,

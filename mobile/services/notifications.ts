@@ -1,21 +1,50 @@
+/**
+ * Push Notifications Service
+ *
+ * Wraps expo-notifications with safety checks for Expo Go,
+ * where push notifications are not supported (SDK 53+).
+ * All calls gracefully degrade to no-ops in Expo Go.
+ */
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { api } from './api';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// Dynamically check if we're running in Expo Go
+const isExpoGo = Constants.appOwnership === 'expo';
+
+let Notifications: typeof import('expo-notifications') | null = null;
+
+// Only load expo-notifications in dev builds (not Expo Go)
+if (!isExpoGo) {
+  try {
+    Notifications = require('expo-notifications');
+  } catch (e) {
+    console.warn('[Notifications] expo-notifications not available:', e);
+  }
+}
+
+// Set notification handler only if available
+if (Notifications) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 export async function registerForPushNotificationsAsync() {
-  let token;
+  // Gracefully skip in Expo Go
+  if (!Notifications) {
+    console.log('[Notifications] Skipped — not available in Expo Go. Use a development build for push notifications.');
+    return undefined;
+  }
+
+  let token: string | undefined;
 
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
@@ -41,7 +70,7 @@ export async function registerForPushNotificationsAsync() {
     try {
       const projectId =
         Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-      
+
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({
           projectId,
