@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
+import { LayoutTemplate, Plus, Trash2, Edit3 } from 'lucide-react';
+import Navbar from '../../components/common/Navbar';
 import Button from '../../components/common/Button';
-import Card from '../../components/common/Card';
+import { useUIStore } from '../../store/uiStore';
+import api from '../../services/api';
 
 interface Template {
   _id: string;
   name: string;
   description: string;
   category: string;
+  icon: string;
   isActive: boolean;
 }
 
 const TemplateManager: React.FC = () => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { showToast } = useUIStore();
 
   useEffect(() => {
     fetchTemplates();
@@ -35,42 +39,58 @@ const TemplateManager: React.FC = () => {
     try {
       await api.delete(`/admin/templates/${id}`);
       setTemplates(templates.filter(t => t._id !== id));
+      showToast('success', 'Template deleted');
     } catch (error) {
-      console.error(error);
+      showToast('error', 'Failed to delete template');
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Template Manager</h1>
-        <Button onClick={() => alert('Create modal coming soon')}>
-          <span className="material-icons text-sm mr-2">add</span>
-          New Template
-        </Button>
-      </div>
-      
-      {isLoading ? (
-        <div>Loading templates...</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map(template => (
-            <Card key={template._id} className="p-4 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-bold">{template.name}</h3>
-                <p className="text-text-secondary text-sm mb-2">{template.category}</p>
-                <p className="text-text-tertiary">{template.description}</p>
-              </div>
-              <div className="flex gap-2 mt-4">
-                <Button variant="outline" className="flex-1" onClick={() => alert('Edit modal coming soon')}>Edit</Button>
-                <Button variant="danger" className="flex-1" onClick={() => deleteTemplate(template._id)}>Delete</Button>
-              </div>
-            </Card>
-          ))}
-          {templates.length === 0 && <p>No templates found.</p>}
+    <>
+      <Navbar />
+      <div className="animate-fade-in">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold">📋 Template Manager</h2>
+          <Button size="sm" onClick={() => showToast('info', 'Create template modal coming soon')} icon={<Plus size={16} />}>
+            New Template
+          </Button>
         </div>
-      )}
-    </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-10 h-10 border-[3px] border-bg-tertiary border-t-neon rounded-full animate-spin" />
+          </div>
+        ) : templates.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <LayoutTemplate size={48} className="text-text-tertiary" />
+            <p className="text-text-secondary">No templates yet. Create one to get started!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {templates.map(template => (
+              <div key={template._id} className="bg-bg-secondary border border-border rounded-2xl p-5 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">{template.icon || '📌'}</span>
+                    <h3 className="text-lg font-bold">{template.name}</h3>
+                  </div>
+                  <span className="inline-block text-xs bg-bg-tertiary text-text-secondary px-2 py-1 rounded-lg mb-2">{template.category}</span>
+                  <p className="text-sm text-text-tertiary">{template.description || 'No description'}</p>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => showToast('info', 'Edit modal coming soon')} icon={<Edit3 size={14} />}>
+                    Edit
+                  </Button>
+                  <Button variant="danger" size="sm" className="flex-1" onClick={() => deleteTemplate(template._id)} icon={<Trash2 size={14} />}>
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
