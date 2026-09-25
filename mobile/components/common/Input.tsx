@@ -1,13 +1,15 @@
 /**
- * Input — Themed text input with label, error state, and icon support.
+ * Input — Themed text input with label, error state, icon, and
+ *         automatic show/hide toggle for password fields.
  *
  * Usage:
  *   <Input label="Email" value={email} onChangeText={setEmail} />
  *   <Input label="Password" secureTextEntry error="Required" />
  *   <Input label="Search" icon={<Search />} />
  */
-import React from 'react';
-import { View, TextInput, Text, StyleSheet, type TextInputProps } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, type TextInputProps } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../hooks/useTheme';
 import { Spacing, FontSize, FontWeight, BorderRadius } from '../../constants/layout';
 
@@ -17,8 +19,11 @@ interface InputProps extends TextInputProps {
   icon?: React.ReactNode;
 }
 
-export function Input({ label, error, icon, style, ...props }: InputProps) {
+export function Input({ label, error, icon, secureTextEntry, style, ...props }: InputProps) {
   const { colors } = useTheme();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const isPassword = secureTextEntry === true;
 
   return (
     <View style={styles.container}>
@@ -45,8 +50,22 @@ export function Input({ label, error, icon, style, ...props }: InputProps) {
             style,
           ]}
           placeholderTextColor={colors.textTertiary}
+          secureTextEntry={isPassword && !isPasswordVisible}
           {...props}
         />
+        {isPassword && (
+          <TouchableOpacity
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.eyeButton}
+          >
+            <Ionicons
+              name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+              size={22}
+              color={colors.textTertiary}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       {error && (
         <Text style={[styles.error, { color: colors.danger }]}>{error}</Text>
@@ -78,6 +97,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FontSize.lg,
     paddingVertical: Spacing.md,
+  },
+  eyeButton: {
+    marginLeft: Spacing.sm,
+    padding: Spacing.xs,
   },
   error: {
     fontSize: FontSize.xs,
