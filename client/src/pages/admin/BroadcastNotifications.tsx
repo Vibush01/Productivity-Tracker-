@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Bell } from 'lucide-react';
 import Navbar from '../../components/common/Navbar';
 import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
+import { Input } from '../../components/common/Input';
 import { useUIStore } from '../../store/uiStore';
 import api from '../../services/api';
 
