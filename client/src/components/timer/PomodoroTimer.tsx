@@ -17,6 +17,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
   const { showToast } = useUIStore();
 
   const [phase, setPhase] = useState<Phase>('WORK');
+  const [workDuration, setWorkDuration] = useState(POMODORO_DEFAULTS.WORK);
   const [timeLeft, setTimeLeft] = useState(POMODORO_DEFAULTS.WORK);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionCount, setSessionCount] = useState(1);
@@ -25,7 +26,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
   const startedAtRef = useRef<Date | null>(null);
 
   const phaseDuration = phase === 'WORK'
-    ? POMODORO_DEFAULTS.WORK
+    ? workDuration
     : phase === 'SHORT_BREAK'
     ? POMODORO_DEFAULTS.SHORT_BREAK
     : POMODORO_DEFAULTS.LONG_BREAK;
@@ -47,8 +48,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
         const result = await saveSession({
           type: 'pomodoro',
           linkedHabit: linkedHabitId || undefined,
-          duration: POMODORO_DEFAULTS.WORK,
-          actualDuration: POMODORO_DEFAULTS.WORK,
+          duration: workDuration,
+          actualDuration: workDuration,
           startedAt: startedAtRef.current || new Date(),
           label: linkedHabitTitle ? `Pomodoro: ${linkedHabitTitle}` : `Pomodoro Session ${sessionCount}`,
         });
@@ -70,7 +71,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
     } else {
       // Break complete — next work session
       setPhase('WORK');
-      setTimeLeft(POMODORO_DEFAULTS.WORK);
+      setTimeLeft(workDuration);
       if (phase === 'LONG_BREAK') setSessionCount(1);
       else setSessionCount((prev) => prev + 1);
     }
@@ -104,7 +105,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
   const handleReset = () => {
     setIsRunning(false);
     setPhase('WORK');
-    setTimeLeft(POMODORO_DEFAULTS.WORK);
+    setTimeLeft(workDuration);
     setSessionCount(1);
     setTotalElapsed(0);
     startedAtRef.current = null;
@@ -186,6 +187,57 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ linkedHabitId, linkedHabi
           <SkipForward size={18} />
         </button>
       </div>
+
+      {/* Presets (Only visible when WORK phase and not running) */}
+      {phase === 'WORK' && !isRunning && (
+        <div className="w-full max-w-[320px]">
+          <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-2 pl-1">PRESETS</h3>
+          <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar mask-edges-x">
+            <button
+              onClick={() => {
+                const newDuration = Math.max(60, workDuration - 5 * 60);
+                setWorkDuration(newDuration);
+                setTimeLeft(newDuration);
+                startedAtRef.current = null;
+              }}
+              className="flex-shrink-0 px-4 py-1.5 rounded-full border border-transparent bg-bg-tertiary text-sm font-semibold text-text-secondary hover:text-text-primary hover:border-border transition-colors"
+            >
+              -5m
+            </button>
+            
+            {[15, 25, 30, 45, 60, 90, 120].map((mins) => (
+              <button
+                key={mins}
+                onClick={() => {
+                  const newDuration = mins * 60;
+                  setWorkDuration(newDuration);
+                  setTimeLeft(newDuration);
+                  startedAtRef.current = null;
+                }}
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
+                  workDuration === mins * 60
+                    ? 'bg-neon/20 border-neon text-neon'
+                    : 'bg-bg-tertiary border-transparent text-text-secondary hover:text-text-primary hover:border-border'
+                }`}
+              >
+                {mins}m
+              </button>
+            ))}
+
+            <button
+              onClick={() => {
+                const newDuration = Math.max(60, workDuration + 5 * 60);
+                setWorkDuration(newDuration);
+                setTimeLeft(newDuration);
+                startedAtRef.current = null;
+              }}
+              className="flex-shrink-0 px-4 py-1.5 rounded-full border border-transparent bg-bg-tertiary text-sm font-semibold text-text-secondary hover:text-text-primary hover:border-border transition-colors"
+            >
+              +5m
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Total focus time */}
       {totalElapsed > 0 && (
