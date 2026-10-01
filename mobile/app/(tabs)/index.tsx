@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useCallback } from 'react';
 import { ScrollView, View, StyleSheet, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ThemedView, ThemedText, Card, Badge } from '../../components/common';
@@ -31,6 +32,7 @@ function getXpForLevel(level: number): number {
 export default function DashboardScreen() {
   const { colors, isDark } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   
   const user = useAuthStore((s) => s.user);
   
@@ -106,7 +108,7 @@ export default function DashboardScreen() {
   return (
     <ThemedView variant="primary" style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -195,7 +197,7 @@ export default function DashboardScreen() {
               <HabitCard
                 key={habit._id}
                 habit={habit}
-                onPress={() => {}}
+                onPress={() => { /* TODO: Navigate to habit detail */ }}
                 onComplete={() => handleToggleHabit(habit._id, habit.todayCompleted)}
               />
             ))}
@@ -230,7 +232,7 @@ export default function DashboardScreen() {
               <TaskCard
                 key={task._id}
                 task={task}
-                onPress={() => {}}
+                onPress={() => { /* TODO: Navigate to task detail */ }}
                 onComplete={() => handleCompleteTask(task._id)}
               />
             ))}

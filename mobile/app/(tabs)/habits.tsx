@@ -3,8 +3,10 @@
  */
 import React, { useEffect, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { ThemedView, ThemedText, Card, Button } from '../../components/common';
 import { HabitCard } from '../../components/habits/HabitCard';
 import { useTheme } from '../../hooks/useTheme';
@@ -13,6 +15,8 @@ import { Spacing } from '../../constants/layout';
 
 export default function HabitsScreen() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
   
   const habits = useHabitStore((s) => s.habits);
   const fetchHabits = useHabitStore((s) => s.fetchHabits);
@@ -60,14 +64,14 @@ export default function HabitsScreen() {
         <Button 
           variant="primary" 
           size="sm" 
-          onPress={() => { /* Open modal to create habit */ }}
+          onPress={() => router.push('/(modals)/create-habit' as any)}
         >
           <Ionicons name="add" size={20} color={colors.bgPrimary} />
         </Button>
       </View>
 
       <ScrollView 
-        contentContainerStyle={styles.scroll} 
+        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]} 
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -83,7 +87,7 @@ export default function HabitsScreen() {
             <HabitCard
               key={habit._id}
               habit={habit}
-              onPress={() => { /* Navigate to habit details */ }}
+              onPress={() => { /* TODO: Navigate to habit detail */ }}
               onComplete={() => handleToggleHabit(habit._id, habit.todayCompleted)}
             />
           ))
@@ -96,7 +100,7 @@ export default function HabitsScreen() {
             <ThemedText variant="body" color="secondary" style={styles.emptyDesc}>
               Start tracking your daily routines by creating your first habit.
             </ThemedText>
-            <Button variant="primary" onPress={() => {}} style={styles.emptyBtn}>
+            <Button variant="primary" onPress={() => router.push('/(modals)/create-habit' as any)} style={styles.emptyBtn}>
               Create Habit
             </Button>
           </Card>

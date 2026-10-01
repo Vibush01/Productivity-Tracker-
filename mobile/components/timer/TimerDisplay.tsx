@@ -1,9 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '../common';
 import { useTheme } from '../../hooks/useTheme';
 import { Spacing } from '../../constants/layout';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Responsive circle: 65% of screen width, capped at 280
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.65, 280);
+const CIRCLE_RADIUS = CIRCLE_SIZE / 2;
 
 interface TimerDisplayProps {
   mode: 'pomodoro' | 'shortBreak' | 'longBreak' | 'stopwatch';
@@ -28,10 +33,13 @@ export function TimerDisplay({ mode, timeLeft, isActive, onToggle, onReset }: Ti
 
   const activeColor = getColor();
 
+  // Font size scales with circle
+  const fontSize = CIRCLE_SIZE * 0.22;
+
   return (
     <View style={styles.container}>
-      <View style={[styles.circle, { borderColor: activeColor }]}>
-        <ThemedText style={styles.timeText} color="primary">
+      <View style={[styles.circle, { borderColor: activeColor, width: CIRCLE_SIZE, height: CIRCLE_SIZE, borderRadius: CIRCLE_RADIUS }]}>
+        <ThemedText style={[styles.timeText, { fontSize }]} color="primary">
           {timeString}
         </ThemedText>
       </View>
@@ -61,21 +69,17 @@ export function TimerDisplay({ mode, timeLeft, isActive, onToggle, onReset }: Ti
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingVertical: Spacing['4xl'],
+    paddingVertical: Spacing['3xl'],
   },
   circle: {
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    borderWidth: 8,
+    borderWidth: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing['3xl'],
+    marginBottom: Spacing['2xl'],
   },
   timeText: {
-    fontSize: 64,
     fontWeight: '700',
-    fontFamily: 'SpaceMono', // assuming we have a monospace font for timer
+    fontFamily: 'SpaceMono',
   },
   controls: {
     flexDirection: 'row',
@@ -92,9 +96,9 @@ const styles = StyleSheet.create({
     borderRadius: 28,
   },
   playBtn: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
   },
   btnPlaceholder: {
     width: 56,

@@ -9,7 +9,7 @@ import Constants from 'expo-constants';
 import { processQueue } from './sync';
 
 const BACKGROUND_SYNC_TASK = 'BACKGROUND_SYNC_TASK';
-const isExpoGo = Constants.appOwnership === 'expo';
+const isExpoGo = Constants.appOwnership === 'expo' || (Constants as any).executionEnvironment === 'storeClient';
 
 let BackgroundFetch: typeof import('expo-background-fetch') | null = null;
 let TaskManager: typeof import('expo-task-manager') | null = null;

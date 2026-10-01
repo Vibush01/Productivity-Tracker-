@@ -138,6 +138,20 @@ export default function RootLayout() {
             headerShown: false 
           }} 
         />
+        <Stack.Screen 
+          name="(modals)/create-habit" 
+          options={{ 
+            presentation: 'modal', 
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="(modals)/create-task" 
+          options={{ 
+            presentation: 'modal', 
+            headerShown: false 
+          }} 
+        />
       </Stack>
     </GestureHandlerRootView>
   );

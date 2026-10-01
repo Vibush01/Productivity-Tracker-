@@ -3,8 +3,10 @@
  */
 import React, { useEffect, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { ThemedView, ThemedText, Card, Button } from '../../components/common';
 import { TaskCard } from '../../components/tasks/TaskCard';
 import { useTheme } from '../../hooks/useTheme';
@@ -13,6 +15,8 @@ import { Spacing } from '../../constants/layout';
 
 export default function TasksScreen() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
   
   const tasks = useTaskStore((s) => s.tasks);
   const fetchTasks = useTaskStore((s) => s.fetchTasks);
@@ -60,7 +64,7 @@ export default function TasksScreen() {
         <Button 
           variant="primary" 
           size="sm" 
-          onPress={() => { /* Open modal to create task */ }}
+          onPress={() => router.push('/(modals)/create-task' as any)}
         >
           <Ionicons name="add" size={20} color={colors.bgPrimary} />
         </Button>
@@ -82,7 +86,7 @@ export default function TasksScreen() {
       </View>
 
       <ScrollView 
-        contentContainerStyle={styles.scroll} 
+        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 100 }]} 
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -98,7 +102,7 @@ export default function TasksScreen() {
             <TaskCard
               key={task._id}
               task={task}
-              onPress={() => { /* Navigate to task details */ }}
+              onPress={() => { /* TODO: Navigate to task detail */ }}
               onComplete={() => !task.completed && handleCompleteTask(task._id)}
             />
           ))

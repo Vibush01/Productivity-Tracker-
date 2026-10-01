@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
 import { api } from './api';
 
 // Dynamically check if we're running in Expo Go
-const isExpoGo = Constants.appOwnership === 'expo';
+const isExpoGo = Constants.appOwnership === 'expo' || (Constants as any).executionEnvironment === 'storeClient';
 
 let Notifications: typeof import('expo-notifications') | null = null;
 

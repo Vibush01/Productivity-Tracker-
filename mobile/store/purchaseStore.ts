@@ -1,81 +1,43 @@
 import { create } from 'zustand';
-import Purchases, { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 
-const isExpoGo = Constants.appOwnership === 'expo';
-
-const REVENUECAT_API_KEY_IOS = 'YOUR_APPLE_API_KEY';
-const REVENUECAT_API_KEY_ANDROID = 'YOUR_GOOGLE_API_KEY';
+/**
+ * Purchase Store
+ * 
+ * Currently all users are default premium.
+ * Subscription model will be added later via RevenueCat.
+ * For now, isPremium is always true and purchase/restore are no-ops.
+ */
 
 interface PurchaseState {
   isPremium: boolean;
-  packages: PurchasesPackage[];
+  packages: any[];
   isLoading: boolean;
   initialize: () => Promise<void>;
-  purchasePackage: (pkg: PurchasesPackage) => Promise<boolean>;
+  purchasePackage: (pkg: any) => Promise<boolean>;
   restorePurchases: () => Promise<boolean>;
 }
 
 export const usePurchaseStore = create<PurchaseState>((set) => ({
-  isPremium: false,
+  // All users are premium by default
+  isPremium: true,
   packages: [],
   isLoading: false,
 
   initialize: async () => {
-    if (isExpoGo) {
-      console.log('[Purchases] Skipped — RevenueCat not available in Expo Go.');
-      return;
-    }
-
-    try {
-      if (Platform.OS === 'ios') {
-        Purchases.configure({ apiKey: REVENUECAT_API_KEY_IOS });
-      } else if (Platform.OS === 'android') {
-        Purchases.configure({ apiKey: REVENUECAT_API_KEY_ANDROID });
-      }
-
-      const customerInfo = await Purchases.getCustomerInfo();
-      const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
-      
-      const offerings = await Purchases.getOfferings();
-      if (offerings.current !== null) {
-        set({ packages: offerings.current.availablePackages });
-      }
-
-      set({ isPremium });
-    } catch (e) {
-      console.error('Error initializing RevenueCat', e);
-    }
+    // All users get premium access by default
+    // RevenueCat will be configured here when subscription model is added
+    console.log('[Purchases] All users are premium by default.');
+    set({ isPremium: true });
   },
 
-  purchasePackage: async (pkg: PurchasesPackage) => {
-    set({ isLoading: true });
-    try {
-      const { customerInfo } = await Purchases.purchasePackage(pkg);
-      const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
-      set({ isPremium, isLoading: false });
-      return isPremium;
-    } catch (e: any) {
-      if (!e.userCancelled) {
-        console.error('Error purchasing package', e);
-      }
-      set({ isLoading: false });
-      return false;
-    }
+  purchasePackage: async () => {
+    // No-op — all users are already premium
+    return true;
   },
 
   restorePurchases: async () => {
-    set({ isLoading: true });
-    try {
-      const customerInfo = await Purchases.restorePurchases();
-      const isPremium = typeof customerInfo.entitlements.active['premium'] !== 'undefined';
-      set({ isPremium, isLoading: false });
-      return isPremium;
-    } catch (e) {
-      console.error('Error restoring purchases', e);
-      set({ isLoading: false });
-      return false;
-    }
+    // No-op — all users are already premium
+    set({ isPremium: true });
+    return true;
   },
 }));
