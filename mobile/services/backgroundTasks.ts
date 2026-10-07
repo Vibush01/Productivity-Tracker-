@@ -6,15 +6,17 @@
  * background fetch is not fully supported.
  */
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import { processQueue } from './sync';
 
 const BACKGROUND_SYNC_TASK = 'BACKGROUND_SYNC_TASK';
 const isExpoGo = Constants.appOwnership === 'expo' || (Constants as any).executionEnvironment === 'storeClient';
+const isWeb = Platform.OS === 'web';
 
 let BackgroundFetch: typeof import('expo-background-fetch') | null = null;
 let TaskManager: typeof import('expo-task-manager') | null = null;
 
-if (!isExpoGo) {
+if (!isExpoGo && !isWeb) {
   try {
     BackgroundFetch = require('expo-background-fetch');
     TaskManager = require('expo-task-manager');

@@ -50,6 +50,14 @@ api.interceptors.response.use(
       const config = error.config;
       // If it's a mutating request, we can queue it for later
       const method = config?.method?.toLowerCase();
+      const url = config?.url || '';
+      
+      // Never queue auth requests — they need real server responses
+      const isAuthRequest = url.startsWith('/auth/');
+      if (isAuthRequest) {
+        return Promise.reject(error);
+      }
+      
       if (['post', 'put', 'delete', 'patch'].includes(method)) {
         console.log(`[Offline] Enqueuing ${method.toUpperCase()} ${config.url}`);
         
